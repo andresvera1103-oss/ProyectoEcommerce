@@ -4,18 +4,23 @@ const nextConfig = {
       remotePatterns: [
         {
           protocol: 'https',
-          hostname: 'fakestoreapi.com',
+          hostname: 'cdn.dummyjson.com', // 👈 Nueva fuente de imágenes
+          port: '',
+          pathname: '/**',
+        },
+        {
+          protocol: 'https',
+          hostname: 'fakestoreapi.com', // Dejamos la anterior por si acaso
           port: '',
           pathname: '/**',
         },
       ],
     },
-    // Esto le dice a Vercel: "Publica aunque haya errores de código, no me importa"
-    typescript: {
-      ignoreBuildErrors: true,
-    },
     eslint: {
       ignoreDuringBuilds: true,
+    },
+    typescript: {
+      ignoreBuildErrors: true,
     },
   };
   
