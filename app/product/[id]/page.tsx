@@ -5,6 +5,10 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { Star } from "lucide-react"; // Ícono de estrella para el rating
 
+
+// 👇 AGREGA ESTA LÍNEA AQUÍ
+export const dynamic = 'force-dynamic';
+
 // Metadata dinámica para SEO (El título de la pestaña cambia según el producto)
 export async function generateMetadata({ params }: { params: { id: string } }) {
   const resolvedParams = await params;
