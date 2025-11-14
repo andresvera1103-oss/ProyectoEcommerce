@@ -1,4 +1,8 @@
-const API_URL = process.env.NEXT_PUBLIC_API_URL;
+// ⚠️ CAMBIO: Ponemos la URL directa para obligar a que funcione
+const API_URL = 'https://fakestoreapi.com'; 
+
+
+// ... (el resto del archivo déjalo igual)
 
 export interface Product {
   id: number;
