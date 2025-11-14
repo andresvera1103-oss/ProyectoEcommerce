@@ -1,59 +1,184 @@
-import Image from "next/image";
-import Link from "next/link";
-import { getAllProducts } from "@/lib/api";
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
-import { Badge } from "@/components/ui/badge";
+'use client';
+
+import { useCartStore } from "@/lib/store";
 import { Button } from "@/components/ui/button";
-import AddToCartButton from "@/components/AddToCartButton";
+import { Input } from "@/components/ui/input";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Separator } from "@/components/ui/separator";
+import Link from "next/link";
+import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useState, useEffect } from "react";
 
-// 👇 ESTA ES LA LÍNEA MÁGICA. 
-// Hace que la página se construya al instante sin esperar a la API.
-export const dynamic = 'force-dynamic';
+export default function CheckoutPage() {
+  const { items, getTotalPrice, clearCart } = useCartStore();
+  const router = useRouter();
+  const total = getTotalPrice();
+  const [isProcessing, setIsProcessing] = useState(false);
+  
+  // ESTA ES LA SOLUCIÓN: Esperar a que el componente se monte en el cliente
+  const [isMounted, setIsMounted] = useState(false);
 
-export default async function Home() {
-  // Ahora esta llamada se hará cuando tú entres a la web, no cuando Vercel la construye.
-  const products = await getAllProducts();
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
+
+  // Estado local para el formulario
+  const [formData, setFormData] = useState({
+    firstName: '',
+    lastName: '',
+    email: '',
+    address: '',
+    city: '',
+    zipCode: ''
+  });
+
+  // Validaciones
+  const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    const cleanValue = value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '');
+    setFormData(prev => ({ ...prev, [name]: cleanValue }));
+  };
+
+  const handleNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    const cleanValue = value.replace(/[^0-9]/g, '');
+    setFormData(prev => ({ ...prev, [name]: cleanValue }));
+  };
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+  const handleCheckout = (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsProcessing(true);
+
+    setTimeout(() => {
+      clearCart();
+      router.push('/checkout/success');
+    }, 2000);
+  };
+
+  // 1. Si no se ha montado aún, no mostramos nada (evita el parpadeo de "vacío")
+  if (!isMounted) {
+    return null; 
+  }
+
+  // 2. Ahora sí, si ya montó y sigue vacío, mostramos el mensaje
+  if (items.length === 0) {
+    return (
+      <div className="container mx-auto p-4 text-center py-20 h-[60vh] flex flex-col justify-center items-center">
+        <h1 className="text-2xl font-bold mb-4">Tu carrito está vacío</h1>
+        <p className="text-gray-500 mb-8">Parece que no has añadido productos aún.</p>
+        <Link href="/">
+          <Button>Volver a la tienda</Button>
+        </Link>
+      </div>
+    );
+  }
 
   return (
-    <main className="container mx-auto p-4">
-      <h1 className="text-4xl font-bold mb-8 mt-8">Nuestra Colección</h1>
-      
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-        {products.map((product) => (
-          <Card key={product.id} className="h-full flex flex-col hover:shadow-lg transition-shadow duration-200">
-            <Link href={`/product/${product.id}`} className="group flex-1 flex flex-col">
-              <CardHeader className="p-0">
-                <div className="relative h-64 w-full bg-white p-4 flex items-center justify-center rounded-t-xl overflow-hidden">
-                  <Image
-                    src={product.image}
-                    alt={product.title}
-                    width={200}
-                    height={200}
-                    className="object-contain h-full w-auto group-hover:scale-105 transition-transform duration-200"
-                  />
-                </div>
-              </CardHeader>
-              <CardContent className="flex-1 p-4">
-                <div className="flex justify-between items-start mb-2">
-                  <Badge variant="secondary" className="text-xs mb-2">
-                    {product.category}
-                  </Badge>
-                  <span className="font-bold text-lg text-green-600">
-                    ${product.price}
-                  </span>
-                </div>
-                <CardTitle className="text-base line-clamp-2 group-hover:text-blue-600 transition-colors">
-                  {product.title}
-                </CardTitle>
-              </CardContent>
-            </Link>
+    <div className="container mx-auto p-4 py-8">
+      <h1 className="text-3xl font-bold mb-8">Finalizar Compra</h1>
 
-            <CardFooter className="p-4 pt-0">
-              <AddToCartButton product={product} />
-            </CardFooter>
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
+        {/* Formulario */}
+        <div>
+          <Card>
+            <CardHeader>
+              <CardTitle>Información de Envío</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <form id="checkout-form" onSubmit={handleCheckout} className="space-y-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Nombre</label>
+                    <Input required name="firstName" placeholder="Juan" value={formData.firstName} onChange={handleNameChange} />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Apellido</label>
+                    <Input required name="lastName" placeholder="Pérez" value={formData.lastName} onChange={handleNameChange} />
+                  </div>
+                </div>
+                
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Correo Electrónico</label>
+                  <Input required type="email" name="email" placeholder="juan@ejemplo.com" value={formData.email} onChange={handleChange} />
+                </div>
+
+                <div className="space-y-2">
+                  <label className="text-sm font-medium">Dirección</label>
+                  <Input required name="address" placeholder="Calle Principal 123" value={formData.address} onChange={handleChange} />
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Ciudad</label>
+                    <Input required name="city" placeholder="Ciudad" value={formData.city} onChange={handleNameChange} />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-sm font-medium">Código Postal</label>
+                    <Input required name="zipCode" placeholder="00000" value={formData.zipCode} onChange={handleNumberChange} maxLength={6} />
+                  </div>
+                </div>
+              </form>
+            </CardContent>
           </Card>
-        ))}
+        </div>
+
+        {/* Resumen */}
+        <div>
+          <Card>
+            <CardHeader>
+              <CardTitle>Resumen del Pedido</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="max-h-[300px] overflow-y-auto space-y-3 pr-2">
+                {items.map((item) => (
+                  <div key={item.id} className="flex gap-4 items-center">
+                    <div className="relative h-12 w-12 bg-white border rounded overflow-hidden flex-shrink-0">
+                      <Image src={item.image} alt={item.title} fill className="object-contain p-1" />
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-sm font-medium line-clamp-1">{item.title}</p>
+                      <p className="text-xs text-gray-500">Cant: {item.quantity}</p>
+                    </div>
+                    <p className="font-medium">${(item.price * item.quantity).toFixed(2)}</p>
+                  </div>
+                ))}
+              </div>
+
+              <Separator />
+
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm">
+                  <span>Subtotal</span>
+                  <span>${total.toFixed(2)}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span>Envío</span>
+                  <span className="text-green-600">Gratis</span>
+                </div>
+                <div className="flex justify-between text-lg font-bold pt-2">
+                  <span>Total</span>
+                  <span>${total.toFixed(2)}</span>
+                </div>
+              </div>
+
+              <Button 
+                type="submit" 
+                form="checkout-form"
+                className="w-full bg-blue-600 hover:bg-blue-700 mt-4"
+                disabled={isProcessing}
+              >
+                {isProcessing ? "Procesando..." : "Confirmar y Pagar"}
+              </Button>
+            </CardContent>
+          </Card>
+        </div>
       </div>
-    </main>
+    </div>
   );
 }

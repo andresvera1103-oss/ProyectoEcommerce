@@ -1,12 +1,12 @@
 import Image from "next/image";
 import Link from "next/link";
-import { getAllProducts, Product } from "@/lib/api";
+import { getAllProducts } from "@/lib/api";
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Button } from "@/components/ui/button";
-
-// 1. Importamos tu nuevo componente de botón
 import AddToCartButton from "@/components/AddToCartButton";
+
+// Forzamos renderizado dinámico para evitar errores en Vercel
+export const dynamic = 'force-dynamic';
 
 export default async function Home() {
   const products = await getAllProducts();
@@ -17,14 +17,11 @@ export default async function Home() {
       
       <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
         {products.map((product) => (
-          // 2. El <Link> YA NO envuelve toda la tarjeta.
-          // La Card es el componente raíz.
-          <Card key={product.id} className="h-full flex flex-col hover:shadow-lg transition-shadow duration-200">
+          <Card key={product.id} className="h-full flex flex-col hover:shadow-lg transition-shadow duration-200 overflow-hidden">
             
-            {/* 3. El Link ahora envuelve la imagen y el contenido principal */}
-            <Link href={`/product/${product.id}`} className="group flex-1 flex flex-col">
+            <Link href={`/product/${product.id}`} className="group flex-1 flex flex-col cursor-pointer">
               <CardHeader className="p-0">
-                <div className="relative h-64 w-full bg-white p-4 flex items-center justify-center rounded-t-xl overflow-hidden">
+                <div className="relative h-64 w-full bg-white p-4 flex items-center justify-center border-b">
                   <Image
                     src={product.image}
                     alt={product.title}
@@ -36,22 +33,24 @@ export default async function Home() {
               </CardHeader>
               <CardContent className="flex-1 p-4">
                 <div className="flex justify-between items-start mb-2">
-                  <Badge variant="secondary" className="text-xs mb-2">
+                  <Badge variant="secondary" className="text-xs mb-2 truncate max-w-[120px]">
                     {product.category}
                   </Badge>
-                  <span className="font-bold text-lg text-green-600">
+                  <span className="font-bold text-lg text-green-600 shrink-0 ml-2">
                     ${product.price}
                   </span>
                 </div>
-                <CardTitle className="text-base line-clamp-2 group-hover:text-blue-600 transition-colors">
+                <CardTitle className="text-base line-clamp-2 group-hover:text-blue-600 transition-colors leading-tight">
                   {product.title}
                 </CardTitle>
               </CardContent>
             </Link>
 
-            {/* 4. El Footer está FUERA del Link y contiene nuestro botón funcional */}
-            <CardFooter className="p-4 pt-0">
-              <AddToCartButton product={product} />
+            {/* Aquí arreglamos el borde: añadimos padding (p-4) */}
+            <CardFooter className="p-4 pt-0 mt-auto">
+              <div className="w-full">
+                <AddToCartButton product={product} />
+              </div>
             </CardFooter>
           </Card>
         ))}
