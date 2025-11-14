@@ -38,39 +38,45 @@ export default function AddToCartButton({ product }: AddToCartButtonProps) {
   };
 
   return (
-    <div className="flex items-center gap-2 w-full">
-      {/* Selector de Cantidad - Con bordes redondeados explícitos */}
-      <div className="flex items-center border border-gray-300 rounded-md h-10 bg-white shrink-0">
+    // 👇 AQUÍ ESTÁ EL CAMBIO: Añadimos el fondo, padding, borde y redondeado al contenedor
+    <div className="flex items-center gap-2 w-full bg-gray-50 p-1 rounded-lg border border-gray-200">
+      
+      {/* Selector de Cantidad */}
+      <div className="flex items-center h-9 bg-white rounded-md border border-gray-200 shadow-sm shrink-0">
         <button 
           onClick={decrement}
-          className="px-3 h-full hover:bg-gray-100 text-gray-600 transition-colors rounded-l-md"
+          className="px-2 h-full hover:bg-gray-100 text-gray-600 transition-colors rounded-l-md flex items-center justify-center"
           type="button"
         >
           <Minus className="h-3 w-3" />
         </button>
-        <span className="w-8 text-center font-medium text-sm">
+        <span className="w-6 text-center font-semibold text-sm text-gray-900">
           {count}
         </span>
         <button 
           onClick={increment}
-          className="px-3 h-full hover:bg-gray-100 text-gray-600 transition-colors rounded-r-md"
+          className="px-2 h-full hover:bg-gray-100 text-gray-600 transition-colors rounded-r-md flex items-center justify-center"
           type="button"
         >
           <Plus className="h-3 w-3" />
         </button>
       </div>
 
-      {/* Botón Principal - Con bordes redondeados explícitos */}
+      {/* Botón Principal */}
       <Button 
         onClick={handleAdd} 
-        className={`flex-1 h-10 rounded-md transition-all duration-200 ${isAdded ? "bg-green-600 hover:bg-green-700" : "bg-blue-600 hover:bg-blue-700"}`}
+        className={`flex-1 h-9 rounded-md shadow-sm transition-all duration-200 text-sm font-medium ${
+          isAdded 
+            ? "bg-green-600 hover:bg-green-700 text-white" 
+            : "bg-blue-600 hover:bg-blue-700 text-white"
+        }`}
       >
         {isAdded ? (
-          "¡Agregado!"
+          "¡Listo!"
         ) : (
-          <div className="flex items-center justify-center gap-2">
-            <ShoppingCart className="h-4 w-4" />
-            <span className="whitespace-nowrap">Añadir</span>
+          <div className="flex items-center justify-center gap-1.5">
+            <ShoppingCart className="h-3.5 w-3.5" />
+            <span>Añadir</span>
           </div>
         )}
       </Button>
