@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import Navbar from "@/components/Navbar"; // 1. Importamos el Navbar
+import Navbar from "@/components/Navbar";
+import Providers from "./providers/providers"; // 1. Importamos el proveedor
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -18,10 +19,11 @@ export default function RootLayout({
   return (
     <html lang="es">
       <body className={inter.className}>
-        {/* 2. Añadimos el Navbar antes del children */}
-        <Navbar />
-        
-        {children}
+        {/* 2. Envolvemos todo (Navbar y children) con Providers */}
+        <Providers>
+          <Navbar />
+          {children}
+        </Providers>
       </body>
     </html>
   );

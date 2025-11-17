@@ -3,18 +3,20 @@
 import Link from "next/link";
 import CartSheet from "./CartSheet";
 import { Button } from "@/components/ui/button";
-import { useSession, signOut, SessionProvider } from "next-auth/react";
+// 1. Ya NO necesitamos SessionProvider aquí
+import { useSession, signOut } from "next-auth/react"; 
 import { User, ShoppingBag } from "lucide-react";
-import { useCartStore } from "@/lib/store"; // 1. Importamos el store
+import { useCartStore } from "@/lib/store";
 
-function NavbarContent() {
+// 2. Ya no necesitamos un "NavbarContent". El componente principal
+// puede leer 'useSession' directamente gracias al layout.
+export default function Navbar() {
   const { data: session } = useSession();
-  const clearCart = useCartStore((state) => state.clearCart); // 2. Obtenemos la función limpiar
+  const clearCart = useCartStore((state) => state.clearCart);
 
-  // Función personalizada para salir
   const handleLogout = () => {
-    clearCart(); // Primero limpia el carrito
-    signOut();   // Luego cierra la sesión
+    clearCart();
+    signOut();
   };
 
   return (
@@ -45,7 +47,7 @@ function NavbarContent() {
               <Button 
                 variant="ghost" 
                 size="sm"
-                onClick={handleLogout} // 3. Usamos nuestra nueva función
+                onClick={handleLogout}
                 className="text-gray-500 hover:text-red-600"
               >
                 Salir
@@ -59,13 +61,5 @@ function NavbarContent() {
         </div>
       </div>
     </header>
-  );
-}
-
-export default function Navbar() {
-  return (
-    <SessionProvider>
-      <NavbarContent />
-    </SessionProvider>
   );
 }

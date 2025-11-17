@@ -9,21 +9,23 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, Lock } from "lucide-react";
+import { useSession } from "next-auth/react";
 
 export default function CheckoutPage() {
-  // 1. Obtenemos la nueva función 'getTotals'
+  const { data: session, status } = useSession();
   const { items, getTotals, clearCart } = useCartStore();
   const router = useRouter();
-  
-  // 2. Calculamos los totales
   const { subtotal, iva, total } = getTotals();
+  
   const [isProcessing, setIsProcessing] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
   }, []);
+
+  // --- INICIO DEL CÓDIGO FALTANTE ---
 
   const [formData, setFormData] = useState({
     firstName: '',
@@ -61,15 +63,42 @@ export default function CheckoutPage() {
     }, 2000);
   };
 
-  if (!isMounted) {
-    return null; 
+  // --- FIN DEL CÓDIGO FALTANTE ---
+
+
+  // Lógica de renderizado
+  
+  if (status === 'loading' || !isMounted) {
+    return (
+      <div className="container mx-auto p-4 text-center py-20 h-[60vh] flex flex-col justify-center items-center">
+        <h1 className="text-2xl font-bold">Cargando...</h1>
+      </div>
+    );
   }
 
+  if (!session) {
+    return (
+      <div className="container mx-auto p-4 text-center py-20 h-[60vh] flex flex-col justify-center items-center">
+        <div className="bg-orange-100 p-6 rounded-full mb-6">
+          <Lock className="h-16 w-16 text-orange-600" />
+        </div>
+        <h1 className="text-3xl font-bold mb-4">Acceso Requerido</h1>
+        <p className="text-gray-600 mb-8 max-w-md">
+          Por favor, inicia sesión para poder finalizar tu compra.
+        </p>
+        <Link href="/login">
+          <Button size="lg" className="bg-blue-600 hover:bg-blue-700">
+            Ir a Iniciar Sesión
+          </Button>
+        </Link>
+      </div>
+    );
+  }
+  
   if (items.length === 0) {
     return (
       <div className="container mx-auto p-4 text-center py-20 h-[60vh] flex flex-col justify-center items-center">
         <h1 className="text-2xl font-bold mb-4">Tu carrito está vacío</h1>
-        <p className="text-gray-500 mb-8">Parece que no has añadido productos aún.</p>
         <Link href="/">
           <Button>Volver a la tienda</Button>
         </Link>
@@ -89,15 +118,13 @@ export default function CheckoutPage() {
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
         
-        {/* Formulario (sin cambios) */}
+        {/* Formulario */}
         <div>
           <Card>
-            <CardHeader>
-              <CardTitle>Información de Envío</CardTitle>
-            </CardHeader>
+            <CardHeader><CardTitle>Información de Envío</CardTitle></CardHeader>
             <CardContent>
               <form id="checkout-form" onSubmit={handleCheckout} className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
+                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <label className="text-sm font-medium">Nombre</label>
                     <Input required name="firstName" placeholder="Juan" value={formData.firstName} onChange={handleNameChange} />
@@ -130,12 +157,10 @@ export default function CheckoutPage() {
           </Card>
         </div>
 
-        {/* 3. Resumen de Orden (¡ACTUALIZADO CON IVA!) */}
+        {/* Resumen */}
         <div>
           <Card>
-            <CardHeader>
-              <CardTitle>Resumen del Pedido</CardTitle>
-            </CardHeader>
+            <CardHeader><CardTitle>Resumen del Pedido</CardTitle></CardHeader>
             <CardContent className="space-y-4">
               <div className="max-h-[300px] overflow-y-auto space-y-3 pr-2">
                 {items.map((item) => (
@@ -151,42 +176,20 @@ export default function CheckoutPage() {
                   </div>
                 ))}
               </div>
-
               <Separator />
-
-              {/* Aquí están los cambios */}
               <div className="space-y-2">
-                <div className="flex justify-between text-sm">
-                  <span>Subtotal</span>
-                  <span>${subtotal.toFixed(2)}</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span>Envío</span>
-                  <span className="text-green-600">Gratis</span>
-                </div>
-                <div className="flex justify-between text-sm">
-                  <span>IVA (15%)</span>
-                  <span>${iva.toFixed(2)}</span>
-                </div>
+                <div className="flex justify-between text-sm"><span>Subtotal</span><span>${subtotal.toFixed(2)}</span></div>
+                <div className="flex justify-between text-sm"><span>Envío</span><span className="text-green-600">Gratis</span></div>
+                <div className="flex justify-between text-sm"><span>IVA (15%)</span><span>${iva.toFixed(2)}</span></div>
                 <Separator className="my-2" />
-                <div className="flex justify-between text-lg font-bold pt-2">
-                  <span>Total</span>
-                  <span>${total.toFixed(2)}</span>
-                </div>
+                <div className="flex justify-between text-lg font-bold pt-2"><span>Total</span><span>${total.toFixed(2)}</span></div>
               </div>
-
-              <Button 
-                type="submit" 
-                form="checkout-form"
-                className="w-full bg-blue-600 hover:bg-blue-700 mt-4"
-                disabled={isProcessing}
-              >
+              <Button type="submit" form="checkout-form" className="w-full bg-blue-600 hover:bg-blue-700 mt-4" disabled={isProcessing}>
                 {isProcessing ? "Procesando..." : "Confirmar y Pagar"}
               </Button>
             </CardContent>
           </Card>
         </div>
-
       </div>
     </div>
   );
