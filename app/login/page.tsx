@@ -74,8 +74,9 @@ export default function LoginPage() {
               />
             </div>
 
+            {/* 👇 ¡CAMBIO REALIZADO AQUÍ! */}
             <Button className="w-full bg-blue-600 hover:bg-blue-700" type="submit" disabled={loading}>
-              {loading ? "Entrando..." : "Ingresar"}
+              {loading ? "Ingresando..." : "Ingresar"}
             </Button>
 
             <div className="text-xs text-gray-500 bg-gray-100 p-3 rounded mt-4">
