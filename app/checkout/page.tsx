@@ -9,12 +9,15 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
-import { ArrowLeft } from "lucide-react"; // Importamos el icono
+import { ArrowLeft } from "lucide-react";
 
 export default function CheckoutPage() {
-  const { items, getTotalPrice, clearCart } = useCartStore();
+  // 1. Obtenemos la nueva función 'getTotals'
+  const { items, getTotals, clearCart } = useCartStore();
   const router = useRouter();
-  const total = getTotalPrice();
+  
+  // 2. Calculamos los totales
+  const { subtotal, iva, total } = getTotals();
   const [isProcessing, setIsProcessing] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
 
@@ -77,7 +80,6 @@ export default function CheckoutPage() {
   return (
     <div className="container mx-auto p-4 py-8">
       
-      {/* 👇 AQUÍ ESTÁ EL CAMBIO: Botón Regresar */}
       <Link href="/" className="inline-flex items-center text-blue-600 hover:text-blue-800 mb-6 transition-colors font-medium">
         <ArrowLeft className="h-4 w-4 mr-2" />
         Regresar
@@ -86,7 +88,8 @@ export default function CheckoutPage() {
       <h1 className="text-3xl font-bold mb-8">Finalizar Compra</h1>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Formulario (Sin cambios) */}
+        
+        {/* Formulario (sin cambios) */}
         <div>
           <Card>
             <CardHeader>
@@ -104,17 +107,14 @@ export default function CheckoutPage() {
                     <Input required name="lastName" placeholder="Pérez" value={formData.lastName} onChange={handleNameChange} />
                   </div>
                 </div>
-                
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Correo Electrónico</label>
                   <Input required type="email" name="email" placeholder="juan@ejemplo.com" value={formData.email} onChange={handleChange} />
                 </div>
-
                 <div className="space-y-2">
                   <label className="text-sm font-medium">Dirección</label>
                   <Input required name="address" placeholder="Calle Principal 123" value={formData.address} onChange={handleChange} />
                 </div>
-
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
                     <label className="text-sm font-medium">Ciudad</label>
@@ -130,7 +130,7 @@ export default function CheckoutPage() {
           </Card>
         </div>
 
-        {/* Resumen (Sin cambios) */}
+        {/* 3. Resumen de Orden (¡ACTUALIZADO CON IVA!) */}
         <div>
           <Card>
             <CardHeader>
@@ -154,15 +154,21 @@ export default function CheckoutPage() {
 
               <Separator />
 
+              {/* Aquí están los cambios */}
               <div className="space-y-2">
                 <div className="flex justify-between text-sm">
                   <span>Subtotal</span>
-                  <span>${total.toFixed(2)}</span>
+                  <span>${subtotal.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-sm">
                   <span>Envío</span>
                   <span className="text-green-600">Gratis</span>
                 </div>
+                <div className="flex justify-between text-sm">
+                  <span>IVA (15%)</span>
+                  <span>${iva.toFixed(2)}</span>
+                </div>
+                <Separator className="my-2" />
                 <div className="flex justify-between text-lg font-bold pt-2">
                   <span>Total</span>
                   <span>${total.toFixed(2)}</span>
@@ -180,6 +186,7 @@ export default function CheckoutPage() {
             </CardContent>
           </Card>
         </div>
+
       </div>
     </div>
   );

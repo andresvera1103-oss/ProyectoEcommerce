@@ -1,6 +1,6 @@
 'use client';
 
-import Link from "next/link"; // 1. Importamos Link
+import Link from "next/link";
 import { ShoppingCart, Trash2, Plus, Minus } from "lucide-react";
 import Image from "next/image";
 import { useCartStore } from "@/lib/store";
@@ -12,20 +12,21 @@ import {
   SheetTitle,
   SheetTrigger,
   SheetFooter,
-  SheetClose, // 2. Importamos SheetClose para cerrar el menú al navegar
+  SheetClose,
 } from "@/components/ui/sheet";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 
 export default function CartSheet() {
-  // Obtenemos las funciones y datos del store
-  const { items, removeItem, updateQuantity, getTotalPrice, getTotalItems } = useCartStore();
-  const total = getTotalPrice();
+  // 1. Obtenemos las funciones actualizadas del store
+  const { items, removeItem, updateQuantity, getTotals, getTotalItems } = useCartStore();
+  
+  // 2. Calculamos los totales
+  const { subtotal, iva, total } = getTotals();
   const itemCount = getTotalItems();
 
   return (
     <Sheet>
-      {/* El Trigger es el botón que abre el carrito */}
       <SheetTrigger asChild>
         <Button variant="outline" size="icon" className="relative">
           <ShoppingCart className="h-5 w-5" />
@@ -44,7 +45,7 @@ export default function CartSheet() {
         
         <Separator className="my-4" />
 
-        {/* Lista de Productos (Área con scroll) */}
+        {/* Lista de Productos (sin cambios) */}
         <div className="flex-1 overflow-y-auto pr-2 space-y-4">
           {items.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-gray-500">
@@ -66,21 +67,11 @@ export default function CartSheet() {
                   <h4 className="text-sm font-semibold line-clamp-2">{item.title}</h4>
                   <div className="flex items-center justify-between mt-2">
                     <div className="flex items-center gap-2">
-                      <Button 
-                        variant="outline" 
-                        size="icon" 
-                        className="h-6 w-6"
-                        onClick={() => updateQuantity(item.id, item.quantity - 1)}
-                      >
+                      <Button variant="outline" size="icon" className="h-6 w-6" onClick={() => updateQuantity(item.id, item.quantity - 1)}>
                         <Minus className="h-3 w-3" />
                       </Button>
                       <span className="text-sm w-4 text-center">{item.quantity}</span>
-                      <Button 
-                        variant="outline" 
-                        size="icon" 
-                        className="h-6 w-6"
-                        onClick={() => updateQuantity(item.id, item.quantity + 1)}
-                      >
+                      <Button variant="outline" size="icon" className="h-6 w-6" onClick={() => updateQuantity(item.id, item.quantity + 1)}>
                         <Plus className="h-3 w-3" />
                       </Button>
                     </div>
@@ -88,12 +79,7 @@ export default function CartSheet() {
                       <span className="font-bold text-sm">
                         ${(item.price * item.quantity).toFixed(2)}
                       </span>
-                      <Button
-                        variant="ghost"
-                        size="icon"
-                        className="h-6 w-6 text-red-500 hover:text-red-700 hover:bg-red-100"
-                        onClick={() => removeItem(item.id)}
-                      >
+                      <Button variant="ghost" size="icon" className="h-6 w-6 text-red-500 hover:text-red-700 hover:bg-red-100" onClick={() => removeItem(item.id)}>
                         <Trash2 className="h-4 w-4" />
                       </Button>
                     </div>
@@ -104,17 +90,24 @@ export default function CartSheet() {
           )}
         </div>
 
-        {/* Pie del Carrito (Totales y Botón Pagar) */}
+        {/* 3. Footer del Carrito (¡ACTUALIZADO CON IVA!) */}
         {items.length > 0 && (
           <SheetFooter className="mt-auto pt-4">
             <div className="w-full space-y-4">
               <Separator />
+              <div className="flex justify-between text-sm">
+                <span>Subtotal</span>
+                <span>${subtotal.toFixed(2)}</span>
+              </div>
+              <div className="flex justify-between text-sm">
+                <span>IVA (15%)</span>
+                <span>${iva.toFixed(2)}</span>
+              </div>
               <div className="flex justify-between items-center text-lg font-bold">
                 <span>Total:</span>
                 <span>${total.toFixed(2)}</span>
               </div>
               
-              {/* 3. Botón conectado con Link y SheetClose */}
               <SheetClose asChild>
                 <Link href="/checkout" className="w-full block">
                   <Button className="w-full size-lg bg-blue-600 hover:bg-blue-700">
@@ -122,7 +115,6 @@ export default function CartSheet() {
                   </Button>
                 </Link>
               </SheetClose>
-              
             </div>
           </SheetFooter>
         )}

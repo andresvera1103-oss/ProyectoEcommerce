@@ -6,16 +6,23 @@ export interface CartItem extends Product {
   quantity: number;
 }
 
+// 1. Definimos la TARIFA DE IVA (15% = 0.15)
+const IVA_RATE = 0.15;
+
 interface CartState {
   items: CartItem[];
-  // Modificamos addItem para aceptar una cantidad opcional (por defecto 1)
   addItem: (product: Product, quantity?: number) => void;
   removeItem: (productId: number) => void;
   updateQuantity: (productId: number, quantity: number) => void;
   clearCart: () => void;
   
   getTotalItems: () => number;
-  getTotalPrice: () => number;
+  // 2. Creamos una función que devuelva todos los cálculos
+  getTotals: () => {
+    subtotal: number;
+    iva: number;
+    total: number;
+  };
 }
 
 export const useCartStore = create<CartState>()(
@@ -23,7 +30,6 @@ export const useCartStore = create<CartState>()(
     (set, get) => ({
       items: [],
 
-      // Ahora aceptamos 'count' como segundo parámetro
       addItem: (product, count = 1) => {
         const currentItems = get().items;
         const existingItem = currentItems.find((item) => item.id === product.id);
@@ -32,7 +38,7 @@ export const useCartStore = create<CartState>()(
           set({
             items: currentItems.map((item) =>
               item.id === product.id
-                ? { ...item, quantity: item.quantity + count } // Sumamos la cantidad elegida
+                ? { ...item, quantity: item.quantity + count }
                 : item
             ),
           });
@@ -58,8 +64,13 @@ export const useCartStore = create<CartState>()(
       getTotalItems: () => {
         return get().items.reduce((total, item) => total + item.quantity, 0);
       },
-      getTotalPrice: () => {
-        return get().items.reduce((total, item) => total + (item.price * item.quantity), 0);
+
+      // 3. Implementamos la nueva función de totales
+      getTotals: () => {
+        const subtotal = get().items.reduce((total, item) => total + (item.price * item.quantity), 0);
+        const iva = subtotal * IVA_RATE;
+        const total = subtotal + iva;
+        return { subtotal, iva, total };
       },
     }),
     {
