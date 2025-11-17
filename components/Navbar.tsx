@@ -4,13 +4,20 @@ import Link from "next/link";
 import CartSheet from "./CartSheet";
 import { Button } from "@/components/ui/button";
 import { useSession, signOut, SessionProvider } from "next-auth/react";
-import { User, ShoppingBag } from "lucide-react"; // Cambié el icono a ShoppingBag para variar
+import { User, ShoppingBag } from "lucide-react";
+import { useCartStore } from "@/lib/store"; // 1. Importamos el store
 
 function NavbarContent() {
   const { data: session } = useSession();
+  const clearCart = useCartStore((state) => state.clearCart); // 2. Obtenemos la función limpiar
+
+  // Función personalizada para salir
+  const handleLogout = () => {
+    clearCart(); // Primero limpia el carrito
+    signOut();   // Luego cierra la sesión
+  };
 
   return (
-    // CAMBIO: sticky, backdrop-blur y un borde sutil
     <header className="sticky top-0 z-50 w-full border-b border-gray-200 bg-white/80 backdrop-blur-md supports-[backdrop-filter]:bg-white/60">
       <div className="container mx-auto flex h-16 items-center justify-between px-4">
         
@@ -27,7 +34,6 @@ function NavbarContent() {
           {session?.user ? (
             <div className="flex items-center gap-3 pl-4 border-l border-gray-200">
               <div className="flex items-center gap-2">
-                {/* Avatar sutil */}
                 <div className="h-8 w-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-700 font-bold text-xs border border-blue-200">
                   {session.user.name?.charAt(0) || "U"}
                 </div>
@@ -39,7 +45,7 @@ function NavbarContent() {
               <Button 
                 variant="ghost" 
                 size="sm"
-                onClick={() => signOut()} 
+                onClick={handleLogout} // 3. Usamos nuestra nueva función
                 className="text-gray-500 hover:text-red-600"
               >
                 Salir

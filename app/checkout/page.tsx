@@ -9,21 +9,19 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
+import { ArrowLeft } from "lucide-react"; // Importamos el icono
 
 export default function CheckoutPage() {
   const { items, getTotalPrice, clearCart } = useCartStore();
   const router = useRouter();
   const total = getTotalPrice();
   const [isProcessing, setIsProcessing] = useState(false);
-  
-  // ESTA ES LA SOLUCIÓN: Esperar a que el componente se monte en el cliente
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
   }, []);
 
-  // Estado local para el formulario
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
@@ -33,7 +31,6 @@ export default function CheckoutPage() {
     zipCode: ''
   });
 
-  // Validaciones
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     const cleanValue = value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '');
@@ -61,12 +58,10 @@ export default function CheckoutPage() {
     }, 2000);
   };
 
-  // 1. Si no se ha montado aún, no mostramos nada (evita el parpadeo de "vacío")
   if (!isMounted) {
     return null; 
   }
 
-  // 2. Ahora sí, si ya montó y sigue vacío, mostramos el mensaje
   if (items.length === 0) {
     return (
       <div className="container mx-auto p-4 text-center py-20 h-[60vh] flex flex-col justify-center items-center">
@@ -81,10 +76,17 @@ export default function CheckoutPage() {
 
   return (
     <div className="container mx-auto p-4 py-8">
+      
+      {/* 👇 AQUÍ ESTÁ EL CAMBIO: Botón Regresar */}
+      <Link href="/" className="inline-flex items-center text-blue-600 hover:text-blue-800 mb-6 transition-colors font-medium">
+        <ArrowLeft className="h-4 w-4 mr-2" />
+        Regresar
+      </Link>
+
       <h1 className="text-3xl font-bold mb-8">Finalizar Compra</h1>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        {/* Formulario */}
+        {/* Formulario (Sin cambios) */}
         <div>
           <Card>
             <CardHeader>
@@ -128,7 +130,7 @@ export default function CheckoutPage() {
           </Card>
         </div>
 
-        {/* Resumen */}
+        {/* Resumen (Sin cambios) */}
         <div>
           <Card>
             <CardHeader>

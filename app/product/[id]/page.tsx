@@ -1,15 +1,14 @@
 import Image from "next/image";
+import Link from "next/link"; // Importamos Link
 import { getProductById } from "@/lib/api";
 import AddToCartButton from "@/components/AddToCartButton";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Star } from "lucide-react"; // Ícono de estrella para el rating
+import { Star, ArrowLeft } from "lucide-react"; // Importamos ArrowLeft
 
-
-// 👇 AGREGA ESTA LÍNEA AQUÍ
+// 👇 IMPORTANTE: Forzamos dinámico para que no falle en Vercel
 export const dynamic = 'force-dynamic';
 
-// Metadata dinámica para SEO (El título de la pestaña cambia según el producto)
 export async function generateMetadata({ params }: { params: { id: string } }) {
   const resolvedParams = await params;
   const product = await getProductById(resolvedParams.id);
@@ -20,14 +19,18 @@ export async function generateMetadata({ params }: { params: { id: string } }) {
 }
 
 export default async function ProductPage({ params }: { params: { id: string } }) {
-  // 1. "Desempaquetamos" los params (recordando lo que aprendimos en el proyecto anterior)
   const resolvedParams = await params;
-  
-  // 2. Obtenemos los datos del producto específico
   const product = await getProductById(resolvedParams.id);
 
   return (
     <div className="container mx-auto px-4 py-8">
+      
+      {/* 👇 AQUÍ ESTÁ EL CAMBIO: Botón Regresar */}
+      <Link href="/" className="inline-flex items-center text-blue-600 hover:text-blue-800 mb-6 transition-colors font-medium">
+        <ArrowLeft className="h-4 w-4 mr-2" />
+        Regresar
+      </Link>
+
       <div className="grid grid-cols-1 md:grid-cols-2 gap-8 lg:gap-12">
         
         {/* COLUMNA IZQUIERDA: Imagen Grande */}
@@ -37,7 +40,7 @@ export default async function ProductPage({ params }: { params: { id: string } }
             alt={product.title}
             fill
             className="object-contain p-4 hover:scale-105 transition-transform duration-300"
-            priority // Carga esta imagen con prioridad (es lo más importante de la página)
+            priority 
           />
         </div>
 
@@ -49,7 +52,6 @@ export default async function ProductPage({ params }: { params: { id: string } }
               {product.title}
             </h1>
             
-            {/* Rating (Estrellas y conteo) */}
             <div className="flex items-center gap-2 text-sm text-gray-500">
               <div className="flex items-center text-yellow-500">
                 <Star className="fill-current h-4 w-4" />
@@ -70,11 +72,8 @@ export default async function ProductPage({ params }: { params: { id: string } }
 
           <Separator />
 
-          {/* Acciones */}
           <div className="flex flex-col gap-4">
-            {/* Reutilizamos nuestro botón inteligente */}
             <AddToCartButton product={product} />
-            
             <p className="text-xs text-gray-400 text-center">
               Envío gratis en pedidos superiores a $50. Devoluciones gratuitas en 30 días.
             </p>
