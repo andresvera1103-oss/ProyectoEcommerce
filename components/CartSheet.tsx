@@ -6,26 +6,31 @@ import Image from "next/image";
 import { useCartStore } from "@/lib/store";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetFooter, SheetClose } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+  SheetFooter,
+  SheetClose,
+} from "@/components/ui/sheet";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { useState, useEffect } from "react";
 
 // --- SUB-COMPONENTE PARA CADA PRODUCTO ---
-// Esto nos permite manejar el estado del input (borrar, escribir) sin que el store nos interrumpa
 function CartItemRow({ item, removeItem, updateQuantity }: any) {
   const [inputValue, setInputValue] = useState(item.quantity.toString());
 
-  // Si la cantidad cambia desde fuera (ej. otro botón), actualizamos el input
   useEffect(() => {
     setInputValue(item.quantity.toString());
   }, [item.quantity]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.replace(/[^0-9]/g, ''); // Solo números
+    const value = e.target.value.replace(/[^0-9]/g, '');
     setInputValue(value);
     
-    // Actualizamos el store en tiempo real si hay un número válido
     const numValue = parseInt(value);
     if (!isNaN(numValue) && numValue >= 1) {
       updateQuantity(item.id, numValue);
@@ -33,29 +38,34 @@ function CartItemRow({ item, removeItem, updateQuantity }: any) {
   };
 
   const handleBlur = () => {
-    // Si el usuario deja vacío el campo, volvemos a poner la cantidad real
     if (inputValue === "" || parseInt(inputValue) < 1) {
       setInputValue(item.quantity.toString());
-      updateQuantity(item.id, item.quantity); // Restaurar valor seguro
+      updateQuantity(item.id, item.quantity);
     }
   };
 
   return (
     <div>
-      <div className="flex gap-4">
-        <div className="relative h-24 w-24 bg-white rounded-lg border border-gray-200 overflow-hidden flex-shrink-0 shadow-sm">
+      <div className="flex gap-4 py-2"> {/* Añadido un poco de padding vertical */}
+        
+        {/* Imagen */}
+        <div className="relative h-20 w-20 bg-white rounded-lg border border-gray-200 overflow-hidden flex-shrink-0 shadow-sm">
           <Image src={item.image} alt={item.title} fill className="object-contain p-2" />
         </div>
 
-        <div className="flex-1 flex flex-col justify-between">
-          <div className="flex justify-between items-start gap-2">
-            <h4 className="text-sm font-semibold text-gray-900 line-clamp-2 leading-snug">
+        {/* Contenido */}
+        <div className="flex-1 flex flex-col justify-between min-w-0"> {/* min-w-0 evita desbordes en flex */}
+          
+          <div className="flex justify-between items-start gap-1">
+            <h4 className="text-sm font-semibold text-gray-900 line-clamp-2 leading-snug pr-2">
               {item.title}
             </h4>
+            
+            {/* Botón Eliminar: Quitamos los márgenes negativos (-mr) */}
             <Button
               variant="ghost"
               size="icon"
-              className="h-8 w-8 text-gray-400 hover:text-red-600 -mr-2 -mt-2"
+              className="h-8 w-8 text-gray-400 hover:text-red-600 shrink-0"
               onClick={() => removeItem(item.id)}
             >
               <Trash2 className="h-4 w-4" />
@@ -64,7 +74,7 @@ function CartItemRow({ item, removeItem, updateQuantity }: any) {
 
           <div className="flex items-end justify-between mt-2">
             {/* Control Editable */}
-            <div className="flex items-center border border-gray-200 rounded-md bg-gray-50 h-8">
+            <div className="flex items-center border border-gray-200 rounded-md bg-gray-50 h-8 shadow-sm">
               <Button 
                 variant="ghost" size="icon" className="h-full w-8 rounded-none rounded-l-md hover:bg-white"
                 onClick={() => updateQuantity(item.id, item.quantity - 1)}
@@ -74,7 +84,7 @@ function CartItemRow({ item, removeItem, updateQuantity }: any) {
               
               <Input 
                 type="text"
-                className="h-full w-12 text-center border-0 bg-transparent p-0 focus-visible:ring-0 shadow-none"
+                className="h-full w-10 text-center border-0 bg-transparent p-0 focus-visible:ring-0 shadow-none text-sm"
                 value={inputValue}
                 onChange={handleInputChange}
                 onBlur={handleBlur}
@@ -88,16 +98,16 @@ function CartItemRow({ item, removeItem, updateQuantity }: any) {
               </Button>
             </div>
 
-            {/* PRECIO (Corregido: Solo mostramos el total, quitamos el "Precio unit") */}
-            <div className="text-right">
-               <p className="font-bold text-lg text-gray-900">
+            {/* PRECIO TOTAL */}
+            <div className="text-right pl-2">
+               <p className="font-bold text-base text-gray-900">
                 ${(item.price * item.quantity).toFixed(2)}
               </p>
             </div>
           </div>
         </div>
       </div>
-      <Separator className="my-6 bg-gray-100" />
+      <Separator className="my-4 bg-gray-100" />
     </div>
   );
 }
@@ -128,7 +138,10 @@ export default function CartSheet() {
         
         <Separator className="my-4" />
 
-        <div className="flex-1 overflow-y-auto pr-4 -mr-4">
+        {/* AQUÍ ESTABA EL PROBLEMA:
+           Quitamos '-mr-4' y dejamos solo un padding normal 'pr-2' para el scrollbar.
+        */}
+        <div className="flex-1 overflow-y-auto pr-2">
           {items.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-gray-500 space-y-4">
               <div className="bg-gray-100 p-6 rounded-full">
@@ -140,9 +153,8 @@ export default function CartSheet() {
               </SheetClose>
             </div>
           ) : (
-            <div className="space-y-2">
+            <div className="space-y-1">
               {items.map((item) => (
-                // Usamos el sub-componente aquí
                 <CartItemRow 
                   key={item.id} 
                   item={item} 
