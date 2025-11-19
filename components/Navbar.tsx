@@ -3,19 +3,16 @@
 import Link from "next/link";
 import CartSheet from "./CartSheet";
 import { Button } from "@/components/ui/button";
-// 1. Ya NO necesitamos SessionProvider aquí
-import { useSession, signOut } from "next-auth/react"; 
+import { useSession, signOut } from "next-auth/react";
 import { User, ShoppingBag } from "lucide-react";
-import { useCartStore } from "@/lib/store";
+// Ya no importamos el store porque no vamos a borrar nada
 
-// 2. Ya no necesitamos un "NavbarContent". El componente principal
-// puede leer 'useSession' directamente gracias al layout.
 export default function Navbar() {
   const { data: session } = useSession();
-  const clearCart = useCartStore((state) => state.clearCart);
 
   const handleLogout = () => {
-    clearCart();
+    // ELIMINADO: clearCart(); 
+    // Ahora solo cerramos la sesión, pero el carrito se queda guardado en el navegador
     signOut();
   };
 
