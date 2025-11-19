@@ -4,8 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { useCartStore } from "@/lib/store";
 import { Product } from "@/lib/api";
-import { useState, useEffect } from "react";
-import { Minus, Plus, ShoppingCart } from "lucide-react";
+import { useState } from "react";
+import { Minus, Plus, ShoppingBag } from "lucide-react";
 
 interface AddToCartButtonProps {
   product: Product;
@@ -14,20 +14,15 @@ interface AddToCartButtonProps {
 export default function AddToCartButton({ product }: AddToCartButtonProps) {
   const addItem = useCartStore((state) => state.addItem);
   const [isAdded, setIsAdded] = useState(false);
-  
-  // Usamos string para permitir que el input quede vacío ("") mientras escribes
   const [inputValue, setInputValue] = useState("1");
 
   const handleAdd = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    
-    // Convertimos el texto a número, si está vacío o es 0, mandamos 1
     const quantity = parseInt(inputValue) || 1;
-    
     addItem(product, quantity);
     setIsAdded(true);
-    setInputValue("1"); // Reseteamos
+    setInputValue("1");
     setTimeout(() => setIsAdded(false), 2000);
   };
 
@@ -46,14 +41,11 @@ export default function AddToCartButton({ product }: AddToCartButtonProps) {
     setInputValue(newValue.toString());
   };
 
-  // Manejar la escritura manual
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // Solo permitimos números
     const value = e.target.value.replace(/[^0-9]/g, '');
     setInputValue(value);
   };
 
-  // Cuando te sales del input (blur), si está vacío, ponle un 1
   const handleBlur = () => {
     if (inputValue === "" || parseInt(inputValue) === 0) {
       setInputValue("1");
@@ -61,50 +53,51 @@ export default function AddToCartButton({ product }: AddToCartButtonProps) {
   };
 
   return (
-    <div className="flex items-center gap-2 w-full bg-gray-50 p-1 rounded-lg border border-gray-200">
+    <div className="flex items-center gap-3 w-full">
       
-      <div className="flex items-center h-9 bg-white rounded-md border border-gray-200 shadow-sm shrink-0 w-28">
+      {/* Selector Minimalista */}
+      <div className="flex items-center bg-slate-100 rounded-full p-1 shadow-inner">
         <button 
           onClick={decrement}
-          className="px-2 h-full hover:bg-gray-100 text-gray-600 transition-colors rounded-l-md flex items-center justify-center border-r"
+          className="w-8 h-8 flex items-center justify-center rounded-full bg-white text-slate-600 hover:text-black shadow-sm transition-all active:scale-90"
           type="button"
         >
           <Minus className="h-3 w-3" />
         </button>
         
-        {/* INPUT EDITABLE MEJORADO */}
         <Input
-          type="text" // Usamos text para tener control total
+          type="text"
           value={inputValue}
           onChange={handleInputChange}
           onBlur={handleBlur}
-          className="h-full border-0 text-center focus-visible:ring-0 px-0 shadow-none font-semibold text-gray-900"
-          onClick={(e) => e.preventDefault()} // Evita click en el Link padre
+          className="w-10 h-8 border-0 bg-transparent text-center focus-visible:ring-0 px-0 font-bold text-slate-700"
+          onClick={(e) => e.preventDefault()}
         />
 
         <button 
           onClick={increment}
-          className="px-2 h-full hover:bg-gray-100 text-gray-600 transition-colors rounded-r-md flex items-center justify-center border-l"
+          className="w-8 h-8 flex items-center justify-center rounded-full bg-white text-slate-600 hover:text-black shadow-sm transition-all active:scale-90"
           type="button"
         >
           <Plus className="h-3 w-3" />
         </button>
       </div>
 
+      {/* Botón Principal Negro/Azul */}
       <Button 
         onClick={handleAdd} 
-        className={`flex-1 h-9 rounded-md shadow-sm transition-all duration-200 text-sm font-medium ${
+        className={`flex-1 h-10 rounded-full font-semibold shadow-md hover:shadow-lg transition-all active:scale-95 ${
           isAdded 
             ? "bg-green-600 hover:bg-green-700 text-white" 
-            : "bg-blue-600 hover:bg-blue-700 text-white"
+            : "bg-slate-900 hover:bg-blue-600 text-white"
         }`}
       >
         {isAdded ? (
           "¡Listo!"
         ) : (
-          <div className="flex items-center justify-center gap-1.5">
-            <ShoppingCart className="h-3.5 w-3.5" />
-            <span>Añadir</span>
+          <div className="flex items-center justify-center gap-2">
+            <ShoppingBag className="h-4 w-4" />
+            <span>Agregar</span>
           </div>
         )}
       </Button>
