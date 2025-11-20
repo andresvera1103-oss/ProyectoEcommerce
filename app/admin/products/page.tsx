@@ -3,7 +3,7 @@ import { getAllProducts } from "@/lib/api";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Edit, Trash2, Plus } from "lucide-react";
+import { Edit, Trash2 } from "lucide-react";
 
 export const dynamic = 'force-dynamic';
 
@@ -14,9 +14,7 @@ export default async function AdminProductsPage() {
     <div>
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold text-slate-900">Inventario de Productos</h1>
-        <Button className="bg-blue-600 hover:bg-blue-700">
-          <Plus className="h-4 w-4 mr-2" /> Nuevo Producto
-        </Button>
+        {/* 👇 ELIMINADO: El botón de "Nuevo Producto" ya no está aquí. */}
       </div>
 
       <Card>
@@ -57,10 +55,11 @@ export default async function AdminProductsPage() {
                     </td>
                     <td className="px-6 py-4 text-right">
                       <div className="flex justify-end gap-2">
-                        <Button variant="outline" size="icon" className="h-8 w-8 text-blue-600">
+                        {/* Botones decorativos (no hacen nada por seguridad en este demo) */}
+                        <Button variant="outline" size="icon" className="h-8 w-8 text-blue-600 opacity-50 cursor-not-allowed">
                           <Edit className="h-4 w-4" />
                         </Button>
-                        <Button variant="outline" size="icon" className="h-8 w-8 text-red-600 hover:bg-red-50">
+                        <Button variant="outline" size="icon" className="h-8 w-8 text-red-600 hover:bg-red-50 opacity-50 cursor-not-allowed">
                           <Trash2 className="h-4 w-4" />
                         </Button>
                       </div>

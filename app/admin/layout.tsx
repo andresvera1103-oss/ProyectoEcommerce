@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { LayoutDashboard, Package, ShoppingCart, Users, Settings } from "lucide-react";
+import { LayoutDashboard, Package, ShoppingCart, Users } from "lucide-react";
 
 export default function AdminLayout({
   children,
@@ -26,7 +26,8 @@ export default function AdminLayout({
             <ShoppingCart className="h-5 w-5" />
             Pedidos
           </Link>
-          <Link href="#" className="flex items-center gap-3 px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg transition-colors">
+          {/* 👇 CAMBIO: Ahora apunta a /admin/customers */}
+          <Link href="/admin/customers" className="flex items-center gap-3 px-4 py-3 text-slate-300 hover:bg-slate-800 hover:text-white rounded-lg transition-colors">
             <Users className="h-5 w-5" />
             Clientes
           </Link>

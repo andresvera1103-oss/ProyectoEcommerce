@@ -9,7 +9,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
-import { ArrowLeft, Lock } from "lucide-react";
+import { ArrowLeft, Lock, CheckCircle } from "lucide-react";
 import { useSession } from "next-auth/react";
 
 export default function CheckoutPage() {
@@ -19,33 +19,26 @@ export default function CheckoutPage() {
   const { subtotal, iva, total } = getTotals();
   
   const [isProcessing, setIsProcessing] = useState(false);
+  // 👇 ESTADO NUEVO: Para saber si ya pagamos
+  const [isSuccess, setIsSuccess] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
   }, []);
 
-  // --- INICIO DEL CÓDIGO FALTANTE ---
-
   const [formData, setFormData] = useState({
-    firstName: '',
-    lastName: '',
-    email: '',
-    address: '',
-    city: '',
-    zipCode: ''
+    firstName: '', lastName: '', email: '', address: '', city: '', zipCode: ''
   });
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    const cleanValue = value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '');
-    setFormData(prev => ({ ...prev, [name]: cleanValue }));
+    setFormData(prev => ({ ...prev, [name]: value.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, '') }));
   };
 
   const handleNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    const cleanValue = value.replace(/[^0-9]/g, '');
-    setFormData(prev => ({ ...prev, [name]: cleanValue }));
+    setFormData(prev => ({ ...prev, [name]: value.replace(/[^0-9]/g, '') }));
   };
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -58,67 +51,59 @@ export default function CheckoutPage() {
     setIsProcessing(true);
 
     setTimeout(() => {
-      clearCart();
-      router.push('/checkout/success');
+      setIsSuccess(true); // 1. Marcamos como éxito ANTES de limpiar
+      clearCart();        // 2. Limpiamos el carrito
+      router.push('/checkout/success'); // 3. Redirigimos
     }, 2000);
   };
 
-  // --- FIN DEL CÓDIGO FALTANTE ---
+  // RENDERIZADO
 
-
-  // Lógica de renderizado
-  
   if (status === 'loading' || !isMounted) {
-    return (
-      <div className="container mx-auto p-4 text-center py-20 h-[60vh] flex flex-col justify-center items-center">
-        <h1 className="text-2xl font-bold">Cargando...</h1>
-      </div>
-    );
+    return <div className="container mx-auto p-4 text-center py-20"><h1 className="text-2xl font-bold">Cargando...</h1></div>;
   }
 
   if (!session) {
     return (
-      <div className="container mx-auto p-4 text-center py-20 h-[60vh] flex flex-col justify-center items-center">
-        <div className="bg-orange-100 p-6 rounded-full mb-6">
-          <Lock className="h-16 w-16 text-orange-600" />
-        </div>
+      <div className="container mx-auto p-4 text-center py-20 flex flex-col items-center">
+        <div className="bg-orange-100 p-6 rounded-full mb-6"><Lock className="h-16 w-16 text-orange-600" /></div>
         <h1 className="text-3xl font-bold mb-4">Acceso Requerido</h1>
-        <p className="text-gray-600 mb-8 max-w-md">
-          Por favor, inicia sesión para poder finalizar tu compra.
-        </p>
-        <Link href="/login">
-          <Button size="lg" className="bg-blue-600 hover:bg-blue-700">
-            Ir a Iniciar Sesión
-          </Button>
-        </Link>
+        <p className="text-gray-600 mb-8">Por favor, inicia sesión para finalizar tu compra.</p>
+        <Link href="/login"><Button size="lg" className="bg-blue-600 hover:bg-blue-700">Ir a Iniciar Sesión</Button></Link>
+      </div>
+    );
+  }
+
+  // 👇 CORRECCIÓN: Si ya pagamos (isSuccess), mostramos "Redirigiendo" en lugar de "Carrito vacío"
+  if (isSuccess) {
+    return (
+      <div className="container mx-auto p-4 text-center py-20 flex flex-col items-center">
+        <div className="bg-green-100 p-6 rounded-full mb-6 animate-pulse">
+          <CheckCircle className="h-16 w-16 text-green-600" />
+        </div>
+        <h1 className="text-3xl font-bold mb-4">¡Pago Exitoso!</h1>
+        <p className="text-gray-600">Redirigiendo a tu confirmación...</p>
       </div>
     );
   }
   
+  // Si el carrito está vacío Y NO hemos pagado aún
   if (items.length === 0) {
     return (
-      <div className="container mx-auto p-4 text-center py-20 h-[60vh] flex flex-col justify-center items-center">
+      <div className="container mx-auto p-4 text-center py-20 flex flex-col items-center">
         <h1 className="text-2xl font-bold mb-4">Tu carrito está vacío</h1>
-        <Link href="/">
-          <Button>Volver a la tienda</Button>
-        </Link>
+        <Link href="/"><Button>Volver a la tienda</Button></Link>
       </div>
     );
   }
 
   return (
     <div className="container mx-auto p-4 py-8">
-      
       <Link href="/" className="inline-flex items-center text-blue-600 hover:text-blue-800 mb-6 transition-colors font-medium">
-        <ArrowLeft className="h-4 w-4 mr-2" />
-        Regresar
+        <ArrowLeft className="h-4 w-4 mr-2" /> Regresar
       </Link>
-
       <h1 className="text-3xl font-bold mb-8">Finalizar Compra</h1>
-
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        
-        {/* Formulario */}
         <div>
           <Card>
             <CardHeader><CardTitle>Información de Envío</CardTitle></CardHeader>
@@ -156,8 +141,6 @@ export default function CheckoutPage() {
             </CardContent>
           </Card>
         </div>
-
-        {/* Resumen */}
         <div>
           <Card>
             <CardHeader><CardTitle>Resumen del Pedido</CardTitle></CardHeader>

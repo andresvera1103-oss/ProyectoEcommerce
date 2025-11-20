@@ -19,7 +19,6 @@ import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { useState, useEffect } from "react";
 
-// --- SUB-COMPONENTE PARA CADA PRODUCTO ---
 function CartItemRow({ item, removeItem, updateQuantity }: any) {
   const [inputValue, setInputValue] = useState(item.quantity.toString());
 
@@ -46,22 +45,16 @@ function CartItemRow({ item, removeItem, updateQuantity }: any) {
 
   return (
     <div>
-      <div className="flex gap-4 py-2"> {/* Añadido un poco de padding vertical */}
-        
-        {/* Imagen */}
+      <div className="flex gap-4 py-2">
         <div className="relative h-20 w-20 bg-white rounded-lg border border-gray-200 overflow-hidden flex-shrink-0 shadow-sm">
           <Image src={item.image} alt={item.title} fill className="object-contain p-2" />
         </div>
 
-        {/* Contenido */}
-        <div className="flex-1 flex flex-col justify-between min-w-0"> {/* min-w-0 evita desbordes en flex */}
-          
+        <div className="flex-1 flex flex-col justify-between min-w-0">
           <div className="flex justify-between items-start gap-1">
             <h4 className="text-sm font-semibold text-gray-900 line-clamp-2 leading-snug pr-2">
               {item.title}
             </h4>
-            
-            {/* Botón Eliminar: Quitamos los márgenes negativos (-mr) */}
             <Button
               variant="ghost"
               size="icon"
@@ -73,7 +66,6 @@ function CartItemRow({ item, removeItem, updateQuantity }: any) {
           </div>
 
           <div className="flex items-end justify-between mt-2">
-            {/* Control Editable */}
             <div className="flex items-center border border-gray-200 rounded-md bg-gray-50 h-8 shadow-sm">
               <Button 
                 variant="ghost" size="icon" className="h-full w-8 rounded-none rounded-l-md hover:bg-white"
@@ -81,7 +73,6 @@ function CartItemRow({ item, removeItem, updateQuantity }: any) {
               >
                 <Minus className="h-3 w-3" />
               </Button>
-              
               <Input 
                 type="text"
                 className="h-full w-10 text-center border-0 bg-transparent p-0 focus-visible:ring-0 shadow-none text-sm"
@@ -89,7 +80,6 @@ function CartItemRow({ item, removeItem, updateQuantity }: any) {
                 onChange={handleInputChange}
                 onBlur={handleBlur}
               />
-
               <Button 
                 variant="ghost" size="icon" className="h-full w-8 rounded-none rounded-r-md hover:bg-white"
                 onClick={() => updateQuantity(item.id, item.quantity + 1)}
@@ -97,8 +87,6 @@ function CartItemRow({ item, removeItem, updateQuantity }: any) {
                 <Plus className="h-3 w-3" />
               </Button>
             </div>
-
-            {/* PRECIO TOTAL */}
             <div className="text-right pl-2">
                <p className="font-bold text-base text-gray-900">
                 ${(item.price * item.quantity).toFixed(2)}
@@ -112,7 +100,6 @@ function CartItemRow({ item, removeItem, updateQuantity }: any) {
   );
 }
 
-// --- COMPONENTE PRINCIPAL ---
 export default function CartSheet() {
   const { items, removeItem, updateQuantity, getTotals, getTotalItems } = useCartStore();
   const { subtotal, iva, total } = getTotals();
@@ -121,10 +108,11 @@ export default function CartSheet() {
   return (
     <Sheet>
       <SheetTrigger asChild>
-        <Button variant="outline" size="icon" className="relative">
+        {/* 👇 CORRECCIÓN: Añadimos 'text-slate-900' y 'border-slate-200' para que se vea el borde y el icono */}
+        <Button variant="outline" size="icon" className="relative text-slate-900 border-slate-300 hover:bg-slate-100">
           <ShoppingCart className="h-5 w-5" />
           {itemCount > 0 && (
-            <Badge className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center p-0 bg-red-600">
+            <Badge className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center p-0 bg-red-600 border-2 border-white text-white">
               {itemCount}
             </Badge>
           )}
@@ -135,12 +123,7 @@ export default function CartSheet() {
         <SheetHeader>
           <SheetTitle className="text-xl font-bold">Tu Carrito ({itemCount} productos)</SheetTitle>
         </SheetHeader>
-        
         <Separator className="my-4" />
-
-        {/* AQUÍ ESTABA EL PROBLEMA:
-           Quitamos '-mr-4' y dejamos solo un padding normal 'pr-2' para el scrollbar.
-        */}
         <div className="flex-1 overflow-y-auto pr-2">
           {items.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full text-gray-500 space-y-4">
