@@ -9,12 +9,11 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
-import { ArrowLeft, Lock, CheckCircle } from "lucide-react";
+import { ArrowLeft, Lock, CheckCircle, CreditCard, MapPin, ShieldCheck } from "lucide-react";
 import { useSession } from "next-auth/react";
 
 export default function CheckoutPage() {
   const { data: session, status } = useSession();
-  // 👇 CAMBIO: Importamos createOrder en lugar de clearCart
   const { items, getTotals, createOrder } = useCartStore();
   const router = useRouter();
   const { subtotal, iva, total } = getTotals();
@@ -23,13 +22,9 @@ export default function CheckoutPage() {
   const [isSuccess, setIsSuccess] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
 
-  useEffect(() => {
-    setIsMounted(true);
-  }, []);
+  useEffect(() => { setIsMounted(true); }, []);
 
-  const [formData, setFormData] = useState({
-    firstName: '', lastName: '', email: '', address: '', city: '', zipCode: ''
-  });
+  const [formData, setFormData] = useState({ firstName: '', lastName: '', email: '', address: '', city: '', zipCode: '' });
 
   const handleNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
@@ -49,126 +44,188 @@ export default function CheckoutPage() {
   const handleCheckout = (e: React.FormEvent) => {
     e.preventDefault();
     setIsProcessing(true);
-
     setTimeout(() => {
       setIsSuccess(true);
-      // 👇 CAMBIO: Guardamos la orden y limpiamos el carrito (todo en uno)
       createOrder(); 
       router.push('/checkout/success');
     }, 2000);
   };
 
-  if (status === 'loading' || !isMounted) {
-    return <div className="container mx-auto p-4 text-center py-20"><h1 className="text-2xl font-bold">Cargando...</h1></div>;
-  }
+  // Estilos compartidos para inputs
+  const inputStyles = "bg-slate-950 border-slate-800 text-white placeholder:text-slate-600 focus-visible:ring-blue-500 focus-visible:border-blue-500 transition-all";
+
+  if (status === 'loading' || !isMounted) return <div className="min-h-screen bg-[#0B1120] flex items-center justify-center"><h1 className="text-2xl font-bold text-white animate-pulse">Cargando pasarela...</h1></div>;
 
   if (!session) {
     return (
-      <div className="container mx-auto p-4 text-center py-20 flex flex-col items-center">
-        <div className="bg-orange-100 p-6 rounded-full mb-6"><Lock className="h-16 w-16 text-orange-600" /></div>
-        <h1 className="text-3xl font-bold mb-4">Acceso Requerido</h1>
-        <p className="text-gray-600 mb-8">Por favor, inicia sesión para finalizar tu compra.</p>
-        <Link href="/login"><Button size="lg" className="bg-blue-600 hover:bg-blue-700">Ir a Iniciar Sesión</Button></Link>
+      <div className="min-h-screen bg-[#0B1120] flex items-center justify-center p-4">
+        <div className="text-center max-w-md w-full bg-slate-900/50 p-8 rounded-2xl border border-slate-800 backdrop-blur-xl shadow-2xl">
+          <div className="bg-blue-500/10 p-4 rounded-full w-fit mx-auto mb-6 border border-blue-500/20">
+            <Lock className="h-10 w-10 text-blue-400" />
+          </div>
+          <h1 className="text-2xl font-bold mb-2 text-white">Acceso Requerido</h1>
+          <p className="text-slate-400 mb-8">Para proteger tu compra, necesitamos que inicies sesión.</p>
+          <Link href="/login">
+            <Button size="lg" className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-lg shadow-lg shadow-blue-900/20">
+              Iniciar Sesión Segura
+            </Button>
+          </Link>
+        </div>
       </div>
     );
   }
 
   if (isSuccess) {
     return (
-      <div className="container mx-auto p-4 text-center py-20 flex flex-col items-center">
-        <div className="bg-green-100 p-6 rounded-full mb-6 animate-pulse">
-          <CheckCircle className="h-16 w-16 text-green-600" />
+      <div className="min-h-screen bg-[#0B1120] flex items-center justify-center p-4">
+        <div className="text-center max-w-md w-full">
+          <div className="bg-emerald-500/10 p-6 rounded-full w-fit mx-auto mb-6 border border-emerald-500/20 animate-bounce">
+            <CheckCircle className="h-16 w-16 text-emerald-500" />
+          </div>
+          <h1 className="text-3xl font-bold mb-2 text-white">¡Pago Exitoso!</h1>
+          <p className="text-slate-400 animate-pulse">Generando tu recibo...</p>
         </div>
-        <h1 className="text-3xl font-bold mb-4">¡Pago Exitoso!</h1>
-        <p className="text-gray-600">Redirigiendo a tu confirmación...</p>
       </div>
     );
   }
   
   if (items.length === 0) {
     return (
-      <div className="container mx-auto p-4 text-center py-20 flex flex-col items-center">
-        <h1 className="text-2xl font-bold mb-4">Tu carrito está vacío</h1>
-        <Link href="/"><Button>Volver a la tienda</Button></Link>
+      <div className="min-h-screen bg-[#0B1120] flex items-center justify-center">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold mb-4 text-white">Tu carrito está vacío</h1>
+          <Link href="/"><Button variant="outline" className="border-slate-700 text-slate-300 hover:bg-slate-800 hover:text-white">Volver a la tienda</Button></Link>
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="container mx-auto p-4 py-8">
-      <Link href="/" className="inline-flex items-center text-blue-600 hover:text-blue-800 mb-6 transition-colors font-medium">
-        <ArrowLeft className="h-4 w-4 mr-2" /> Regresar
-      </Link>
-      <h1 className="text-3xl font-bold mb-8">Finalizar Compra</h1>
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-        <div>
-          <Card>
-            <CardHeader><CardTitle>Información de Envío</CardTitle></CardHeader>
-            <CardContent>
-              <form id="checkout-form" onSubmit={handleCheckout} className="space-y-4">
-                 <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Nombre</label>
-                    <Input required name="firstName" placeholder="Juan" value={formData.firstName} onChange={handleNameChange} />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Apellido</label>
-                    <Input required name="lastName" placeholder="Pérez" value={formData.lastName} onChange={handleNameChange} />
-                  </div>
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Correo Electrónico</label>
-                  <Input required type="email" name="email" placeholder="juan@ejemplo.com" value={formData.email} onChange={handleChange} />
-                </div>
-                <div className="space-y-2">
-                  <label className="text-sm font-medium">Dirección</label>
-                  <Input required name="address" placeholder="Calle Principal 123" value={formData.address} onChange={handleChange} />
-                </div>
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Ciudad</label>
-                    <Input required name="city" placeholder="Ciudad" value={formData.city} onChange={handleNameChange} />
-                  </div>
-                  <div className="space-y-2">
-                    <label className="text-sm font-medium">Código Postal</label>
-                    <Input required name="zipCode" placeholder="00000" value={formData.zipCode} onChange={handleNumberChange} maxLength={6} />
-                  </div>
-                </div>
-              </form>
-            </CardContent>
-          </Card>
+    <div className="min-h-screen bg-[#0B1120] text-slate-200 pb-20">
+      <div className="container mx-auto px-4 py-8 max-w-6xl">
+        
+        <Link href="/" className="inline-flex items-center text-slate-400 hover:text-blue-400 mb-8 transition-colors font-medium group">
+          <ArrowLeft className="h-4 w-4 mr-2 group-hover:-translate-x-1 transition-transform" />
+          Regresar a la tienda
+        </Link>
+
+        <div className="flex items-center gap-3 mb-8">
+            <div className="h-8 w-1 bg-blue-600 rounded-full"></div>
+            <h1 className="text-3xl font-bold text-white tracking-tight">Finalizar Compra</h1>
         </div>
-        <div>
-          <Card>
-            <CardHeader><CardTitle>Resumen del Pedido</CardTitle></CardHeader>
-            <CardContent className="space-y-4">
-              <div className="max-h-[300px] overflow-y-auto space-y-3 pr-2">
-                {items.map((item) => (
-                  <div key={item.id} className="flex gap-4 items-center">
-                    <div className="relative h-12 w-12 bg-white border rounded overflow-hidden flex-shrink-0">
-                      <Image src={item.image} alt={item.title} fill className="object-contain p-1" />
+
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
+          
+          {/* COLUMNA IZQUIERDA: FORMULARIO (Ocupa 7 columnas) */}
+          <div className="lg:col-span-7 space-y-6">
+            <Card className="bg-slate-900/50 border-slate-800 shadow-xl backdrop-blur-sm">
+              <CardHeader className="border-b border-slate-800 pb-4">
+                <div className="flex items-center gap-2 text-blue-400 mb-1">
+                  <MapPin className="h-4 w-4" />
+                  <span className="text-xs font-bold uppercase tracking-wider">Paso 1</span>
+                </div>
+                <CardTitle className="text-white text-xl">Detalles de Envío</CardTitle>
+              </CardHeader>
+              <CardContent className="pt-6">
+                <form id="checkout-form" onSubmit={handleCheckout} className="space-y-5">
+                   <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <label className="text-xs font-medium text-slate-400 uppercase">Nombre</label>
+                      <Input required name="firstName" placeholder="Juan" value={formData.firstName} onChange={handleNameChange} className={inputStyles} />
                     </div>
-                    <div className="flex-1">
-                      <p className="text-sm font-medium line-clamp-1">{item.title}</p>
-                      <p className="text-xs text-gray-500">Cant: {item.quantity}</p>
+                    <div className="space-y-2">
+                      <label className="text-xs font-medium text-slate-400 uppercase">Apellido</label>
+                      <Input required name="lastName" placeholder="Pérez" value={formData.lastName} onChange={handleNameChange} className={inputStyles} />
                     </div>
-                    <p className="font-medium">${(item.price * item.quantity).toFixed(2)}</p>
                   </div>
-                ))}
-              </div>
-              <Separator />
-              <div className="space-y-2">
-                <div className="flex justify-between text-sm"><span>Subtotal</span><span>${subtotal.toFixed(2)}</span></div>
-                <div className="flex justify-between text-sm"><span>Envío</span><span className="text-green-600">Gratis</span></div>
-                <div className="flex justify-between text-sm"><span>IVA (15%)</span><span>${iva.toFixed(2)}</span></div>
-                <Separator className="my-2" />
-                <div className="flex justify-between text-lg font-bold pt-2"><span>Total</span><span>${total.toFixed(2)}</span></div>
-              </div>
-              <Button type="submit" form="checkout-form" className="w-full bg-blue-600 hover:bg-blue-700 mt-4" disabled={isProcessing}>
-                {isProcessing ? "Procesando..." : "Confirmar y Pagar"}
-              </Button>
-            </CardContent>
-          </Card>
+                  <div className="space-y-2">
+                    <label className="text-xs font-medium text-slate-400 uppercase">Correo Electrónico</label>
+                    <Input required type="email" name="email" placeholder="juan@ejemplo.com" value={formData.email} onChange={handleChange} className={inputStyles} />
+                  </div>
+                  <div className="space-y-2">
+                    <label className="text-xs font-medium text-slate-400 uppercase">Dirección</label>
+                    <Input required name="address" placeholder="Calle Principal 123" value={formData.address} onChange={handleChange} className={inputStyles} />
+                  </div>
+                  <div className="grid grid-cols-2 gap-4">
+                    <div className="space-y-2">
+                      <label className="text-xs font-medium text-slate-400 uppercase">Ciudad</label>
+                      <Input required name="city" placeholder="Ciudad" value={formData.city} onChange={handleNameChange} className={inputStyles} />
+                    </div>
+                    <div className="space-y-2">
+                      <label className="text-xs font-medium text-slate-400 uppercase">Código Postal</label>
+                      <Input required name="zipCode" placeholder="00000" value={formData.zipCode} onChange={handleNumberChange} maxLength={6} className={inputStyles} />
+                    </div>
+                  </div>
+                </form>
+              </CardContent>
+            </Card>
+            
+            {/* Tarjeta decorativa de pago */}
+            <div className="bg-slate-900/30 border border-slate-800/50 rounded-xl p-6 flex items-center gap-4 text-slate-400">
+              <ShieldCheck className="h-6 w-6 text-emerald-500" />
+              <p className="text-sm">Sus datos están encriptados con seguridad SSL de 256 bits. Pagos procesados de forma segura.</p>
+            </div>
+          </div>
+
+          {/* COLUMNA DERECHA: RESUMEN (Ocupa 5 columnas) */}
+          <div className="lg:col-span-5">
+            <div className="sticky top-24">
+              <Card className="bg-slate-900 border-slate-800 shadow-2xl overflow-hidden">
+                <CardHeader className="bg-slate-950 border-b border-slate-800 pb-4">
+                  <div className="flex items-center gap-2 text-blue-400 mb-1">
+                    <CreditCard className="h-4 w-4" />
+                    <span className="text-xs font-bold uppercase tracking-wider">Resumen</span>
+                  </div>
+                  <CardTitle className="text-white text-xl">Tu Pedido</CardTitle>
+                </CardHeader>
+                <CardContent className="pt-6 space-y-6">
+                  <div className="max-h-[300px] overflow-y-auto space-y-4 pr-2 custom-scrollbar">
+                    {items.map((item) => (
+                      <div key={item.id} className="flex gap-4 items-center group">
+                        <div className="relative h-14 w-14 bg-white rounded-lg overflow-hidden flex-shrink-0 border border-slate-700">
+                          <Image src={item.image} alt={item.title} fill className="object-contain p-1 group-hover:scale-110 transition-transform" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="text-sm font-medium text-white line-clamp-1">{item.title}</p>
+                          <p className="text-xs text-slate-500">Cant: <span className="text-slate-300">{item.quantity}</span></p>
+                        </div>
+                        <p className="font-bold text-white text-sm">${(item.price * item.quantity).toFixed(2)}</p>
+                      </div>
+                    ))}
+                  </div>
+
+                  <Separator className="bg-slate-800" />
+
+                  <div className="space-y-3">
+                    <div className="flex justify-between text-sm text-slate-400"><span>Subtotal</span><span>${subtotal.toFixed(2)}</span></div>
+                    <div className="flex justify-between text-sm text-slate-400"><span>Envío</span><span className="text-emerald-400 font-medium">Gratis</span></div>
+                    <div className="flex justify-between text-sm text-slate-400"><span>IVA (15%)</span><span>${iva.toFixed(2)}</span></div>
+                    <Separator className="bg-slate-800 my-2" />
+                    <div className="flex justify-between items-center">
+                      <span className="text-lg font-bold text-white">Total a Pagar</span>
+                      <span className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400">${total.toFixed(2)}</span>
+                    </div>
+                  </div>
+
+                  <Button 
+                    type="submit" 
+                    form="checkout-form"
+                    className="w-full h-12 bg-blue-600 hover:bg-blue-500 text-white text-lg font-semibold shadow-lg shadow-blue-900/50 transition-all hover:scale-[1.02]"
+                    disabled={isProcessing}
+                  >
+                    {isProcessing ? "Procesando pago..." : "Confirmar Pago"}
+                  </Button>
+                  
+                  <div className="flex justify-center gap-2 opacity-50 grayscale hover:grayscale-0 transition-all duration-500">
+                     {/* Iconos simulados de tarjetas */}
+                     <div className="h-6 w-10 bg-white rounded"></div>
+                     <div className="h-6 w-10 bg-white rounded"></div>
+                     <div className="h-6 w-10 bg-white rounded"></div>
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+          </div>
         </div>
       </div>
     </div>
