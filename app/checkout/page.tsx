@@ -14,12 +14,12 @@ import { useSession } from "next-auth/react";
 
 export default function CheckoutPage() {
   const { data: session, status } = useSession();
-  const { items, getTotals, clearCart } = useCartStore();
+  // 👇 CAMBIO: Importamos createOrder en lugar de clearCart
+  const { items, getTotals, createOrder } = useCartStore();
   const router = useRouter();
   const { subtotal, iva, total } = getTotals();
   
   const [isProcessing, setIsProcessing] = useState(false);
-  // 👇 ESTADO NUEVO: Para saber si ya pagamos
   const [isSuccess, setIsSuccess] = useState(false);
   const [isMounted, setIsMounted] = useState(false);
 
@@ -51,13 +51,12 @@ export default function CheckoutPage() {
     setIsProcessing(true);
 
     setTimeout(() => {
-      setIsSuccess(true); // 1. Marcamos como éxito ANTES de limpiar
-      clearCart();        // 2. Limpiamos el carrito
-      router.push('/checkout/success'); // 3. Redirigimos
+      setIsSuccess(true);
+      // 👇 CAMBIO: Guardamos la orden y limpiamos el carrito (todo en uno)
+      createOrder(); 
+      router.push('/checkout/success');
     }, 2000);
   };
-
-  // RENDERIZADO
 
   if (status === 'loading' || !isMounted) {
     return <div className="container mx-auto p-4 text-center py-20"><h1 className="text-2xl font-bold">Cargando...</h1></div>;
@@ -74,7 +73,6 @@ export default function CheckoutPage() {
     );
   }
 
-  // 👇 CORRECCIÓN: Si ya pagamos (isSuccess), mostramos "Redirigiendo" en lugar de "Carrito vacío"
   if (isSuccess) {
     return (
       <div className="container mx-auto p-4 text-center py-20 flex flex-col items-center">
@@ -87,7 +85,6 @@ export default function CheckoutPage() {
     );
   }
   
-  // Si el carrito está vacío Y NO hemos pagado aún
   if (items.length === 0) {
     return (
       <div className="container mx-auto p-4 text-center py-20 flex flex-col items-center">

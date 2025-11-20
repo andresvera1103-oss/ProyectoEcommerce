@@ -6,18 +6,30 @@ export interface CartItem extends Product {
   quantity: number;
 }
 
-// 1. Definimos la TARIFA DE IVA (15% = 0.15)
+// Definimos cómo se ve una Orden
+export interface Order {
+  id: string;
+  date: string;
+  items: CartItem[];
+  total: number;
+  status: 'Pagado' | 'Procesando';
+}
+
 const IVA_RATE = 0.15;
 
 interface CartState {
   items: CartItem[];
+  orders: Order[]; // Nueva lista para el historial
+  
   addItem: (product: Product, quantity?: number) => void;
   removeItem: (productId: number) => void;
   updateQuantity: (productId: number, quantity: number) => void;
   clearCart: () => void;
   
+  // Nueva acción para finalizar compra
+  createOrder: () => void;
+
   getTotalItems: () => number;
-  // 2. Creamos una función que devuelva todos los cálculos
   getTotals: () => {
     subtotal: number;
     iva: number;
@@ -29,6 +41,7 @@ export const useCartStore = create<CartState>()(
   persist(
     (set, get) => ({
       items: [],
+      orders: [], // Inicializamos vacío
 
       addItem: (product, count = 1) => {
         const currentItems = get().items;
@@ -61,11 +74,29 @@ export const useCartStore = create<CartState>()(
 
       clearCart: () => set({ items: [] }),
 
+      // Lógica para mover del Carrito -> Historial de Pedidos
+      createOrder: () => {
+        const { items, getTotals, orders } = get();
+        const { total } = getTotals();
+        
+        const newOrder: Order = {
+          id: Math.random().toString(36).substr(2, 9).toUpperCase(), // ID único random
+          date: new Date().toLocaleDateString(),
+          items: [...items], // Copiamos los items actuales
+          total: total,
+          status: 'Pagado'
+        };
+
+        set({ 
+          orders: [newOrder, ...orders], // Agregamos al principio de la lista
+          items: [] // Vaciamos el carrito
+        });
+      },
+
       getTotalItems: () => {
         return get().items.reduce((total, item) => total + item.quantity, 0);
       },
 
-      // 3. Implementamos la nueva función de totales
       getTotals: () => {
         const subtotal = get().items.reduce((total, item) => total + (item.price * item.quantity), 0);
         const iva = subtotal * IVA_RATE;
@@ -74,7 +105,7 @@ export const useCartStore = create<CartState>()(
       },
     }),
     {
-      name: 'ecommerce-cart',
+      name: 'ecommerce-storage', // Cambié el nombre para asegurar que se actualice la estructura
     }
   )
 );

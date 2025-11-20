@@ -2,7 +2,8 @@
 
 import { useState } from "react";
 import { signIn } from "next-auth/react";
-import { useRouter } from "next/navigation";
+// Usaremos window.location en lugar de router para forzar la actualización
+// import { useRouter } from "next/navigation"; 
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
@@ -13,7 +14,7 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
-  const router = useRouter();
+  // const router = useRouter(); // No lo usamos
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,8 +31,9 @@ export default function LoginPage() {
       setError("Usuario o contraseña incorrectos.");
       setLoading(false);
     } else {
-      router.push("/");
-      router.refresh();
+      // 👇 SOLUCIÓN DEFINITIVA: Forzamos recarga completa
+      // Esto garantiza que la sesión se actualice en el Navbar
+      window.location.href = "/";
     }
   };
 
@@ -46,14 +48,12 @@ export default function LoginPage() {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-4">
-            
             {error && (
               <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded flex items-center gap-2 text-sm">
                 <AlertCircle className="h-4 w-4" />
                 {error}
               </div>
             )}
-
             <div className="space-y-2">
               <label className="text-sm font-medium">Usuario</label>
               <Input 
@@ -73,12 +73,9 @@ export default function LoginPage() {
                 required
               />
             </div>
-
-            {/* 👇 ¡CAMBIO REALIZADO AQUÍ! */}
             <Button className="w-full bg-blue-600 hover:bg-blue-700" type="submit" disabled={loading}>
               {loading ? "Ingresando..." : "Ingresar"}
             </Button>
-
             <div className="text-xs text-gray-500 bg-gray-100 p-3 rounded mt-4">
               <p className="font-bold mb-1">Credenciales de prueba (DummyJSON):</p>
               <p>Usuario: <strong>emilys</strong></p>

@@ -1,9 +1,7 @@
 import Image from "next/image";
 import { getAllProducts } from "@/lib/api";
-import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Edit, Trash2 } from "lucide-react";
 
 export const dynamic = 'force-dynamic';
 
@@ -14,7 +12,6 @@ export default async function AdminProductsPage() {
     <div>
       <div className="flex justify-between items-center mb-8">
         <h1 className="text-3xl font-bold text-slate-900">Inventario de Productos</h1>
-        {/* 👇 ELIMINADO: El botón de "Nuevo Producto" ya no está aquí. */}
       </div>
 
       <Card>
@@ -30,7 +27,7 @@ export default async function AdminProductsPage() {
                   <th className="px-6 py-3">Categoría</th>
                   <th className="px-6 py-3">Precio</th>
                   <th className="px-6 py-3">Rating</th>
-                  <th className="px-6 py-3 text-right">Acciones</th>
+                  {/* Columna Acciones ELIMINADA */}
                 </tr>
               </thead>
               <tbody>
@@ -53,17 +50,7 @@ export default async function AdminProductsPage() {
                         <span className="text-yellow-500">★</span> {product.rating.rate}
                       </div>
                     </td>
-                    <td className="px-6 py-4 text-right">
-                      <div className="flex justify-end gap-2">
-                        {/* Botones decorativos (no hacen nada por seguridad en este demo) */}
-                        <Button variant="outline" size="icon" className="h-8 w-8 text-blue-600 opacity-50 cursor-not-allowed">
-                          <Edit className="h-4 w-4" />
-                        </Button>
-                        <Button variant="outline" size="icon" className="h-8 w-8 text-red-600 hover:bg-red-50 opacity-50 cursor-not-allowed">
-                          <Trash2 className="h-4 w-4" />
-                        </Button>
-                      </div>
-                    </td>
+                    {/* Celdas de Acciones ELIMINADAS */}
                   </tr>
                 ))}
               </tbody>
