@@ -53,13 +53,13 @@ export default function AddToCartButton({ product }: AddToCartButtonProps) {
   };
 
   return (
-    <div className="flex items-center gap-3 w-full">
+    // CAMBIOS DE COLOR PARA DARK MODE
+    <div className="flex items-center gap-3 w-full bg-slate-800/50 p-1 rounded-xl border border-slate-700/50">
       
-      {/* Selector Minimalista */}
-      <div className="flex items-center bg-slate-100 rounded-full p-1 shadow-inner">
+      <div className="flex items-center bg-slate-900 rounded-lg p-0.5 shadow-inner border border-slate-800">
         <button 
           onClick={decrement}
-          className="w-8 h-8 flex items-center justify-center rounded-full bg-white text-slate-600 hover:text-black shadow-sm transition-all active:scale-90"
+          className="w-8 h-8 flex items-center justify-center rounded-md text-slate-400 hover:text-white hover:bg-slate-700 transition-all"
           type="button"
         >
           <Minus className="h-3 w-3" />
@@ -70,26 +70,25 @@ export default function AddToCartButton({ product }: AddToCartButtonProps) {
           value={inputValue}
           onChange={handleInputChange}
           onBlur={handleBlur}
-          className="w-10 h-8 border-0 bg-transparent text-center focus-visible:ring-0 px-0 font-bold text-slate-700"
+          className="w-10 h-8 border-0 bg-transparent text-center focus-visible:ring-0 px-0 font-bold text-slate-200"
           onClick={(e) => e.preventDefault()}
         />
 
         <button 
           onClick={increment}
-          className="w-8 h-8 flex items-center justify-center rounded-full bg-white text-slate-600 hover:text-black shadow-sm transition-all active:scale-90"
+          className="w-8 h-8 flex items-center justify-center rounded-md text-slate-400 hover:text-white hover:bg-slate-700 transition-all"
           type="button"
         >
           <Plus className="h-3 w-3" />
         </button>
       </div>
 
-      {/* Botón Principal Negro/Azul */}
       <Button 
         onClick={handleAdd} 
-        className={`flex-1 h-10 rounded-full font-semibold shadow-md hover:shadow-lg transition-all active:scale-95 ${
+        className={`flex-1 h-10 rounded-lg font-semibold shadow-lg shadow-blue-900/20 transition-all active:scale-95 ${
           isAdded 
-            ? "bg-green-600 hover:bg-green-700 text-white" 
-            : "bg-slate-900 hover:bg-blue-600 text-white"
+            ? "bg-emerald-500 hover:bg-emerald-600 text-white border border-emerald-400/20" 
+            : "bg-blue-600 hover:bg-blue-500 text-white border border-blue-500/20"
         }`}
       >
         {isAdded ? (
