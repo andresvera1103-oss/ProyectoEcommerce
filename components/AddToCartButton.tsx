@@ -30,7 +30,10 @@ export default function AddToCartButton({ product }: AddToCartButtonProps) {
     e.preventDefault();
     e.stopPropagation();
     const current = parseInt(inputValue) || 0;
-    setInputValue((current + 1).toString());
+    // Validamos que no pase de 99
+    if (current < 99) {
+      setInputValue((current + 1).toString());
+    }
   };
 
   const decrement = (e: React.MouseEvent) => {
@@ -42,7 +45,14 @@ export default function AddToCartButton({ product }: AddToCartButtonProps) {
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.replace(/[^0-9]/g, '');
+    // 1. Solo números
+    let value = e.target.value.replace(/[^0-9]/g, '');
+    
+    // 2. VALIDACIÓN: Máximo 2 caracteres (0-99)
+    if (value.length > 2) {
+      value = value.slice(0, 2);
+    }
+    
     setInputValue(value);
   };
 
@@ -53,7 +63,6 @@ export default function AddToCartButton({ product }: AddToCartButtonProps) {
   };
 
   return (
-    // CAMBIOS DE COLOR PARA DARK MODE
     <div className="flex items-center gap-3 w-full bg-slate-800/50 p-1 rounded-xl border border-slate-700/50">
       
       <div className="flex items-center bg-slate-900 rounded-lg p-0.5 shadow-inner border border-slate-800">

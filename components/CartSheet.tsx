@@ -27,7 +27,14 @@ function CartItemRow({ item, removeItem, updateQuantity }: any) {
   }, [item.quantity]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value.replace(/[^0-9]/g, '');
+    // 1. Validar solo números
+    let value = e.target.value.replace(/[^0-9]/g, '');
+    
+    // 2. VALIDACIÓN MÁXIMA 99 (2 dígitos)
+    if (value.length > 2) {
+      value = value.slice(0, 2); // Corta si hay más de 2 caracteres
+    }
+
     setInputValue(value);
     
     const numValue = parseInt(value);
@@ -69,7 +76,7 @@ function CartItemRow({ item, removeItem, updateQuantity }: any) {
             <div className="flex items-center border border-gray-200 rounded-md bg-gray-50 h-8 shadow-sm">
               <Button 
                 variant="ghost" size="icon" className="h-full w-8 rounded-none rounded-l-md hover:bg-white"
-                onClick={() => updateQuantity(item.id, item.quantity - 1)}
+                onClick={() => updateQuantity(item.id, Math.min(99, item.quantity - 1))} // Protegemos también el botón
               >
                 <Minus className="h-3 w-3" />
               </Button>
@@ -82,7 +89,7 @@ function CartItemRow({ item, removeItem, updateQuantity }: any) {
               />
               <Button 
                 variant="ghost" size="icon" className="h-full w-8 rounded-none rounded-r-md hover:bg-white"
-                onClick={() => updateQuantity(item.id, item.quantity + 1)}
+                onClick={() => updateQuantity(item.id, Math.min(99, item.quantity + 1))} // Max 99
               >
                 <Plus className="h-3 w-3" />
               </Button>
@@ -108,11 +115,11 @@ export default function CartSheet() {
   return (
     <Sheet>
       <SheetTrigger asChild>
-        {/* 👇 CORRECCIÓN: Añadimos 'text-slate-900' y 'border-slate-200' para que se vea el borde y el icono */}
-        <Button variant="outline" size="icon" className="relative text-slate-900 border-slate-300 hover:bg-slate-100">
+        {/* 👇 CAMBIO DE COLOR DEL BOTÓN DE CARRITO */}
+        <Button variant="ghost" size="icon" className="relative bg-slate-800 text-white hover:bg-slate-700 border border-slate-700">
           <ShoppingCart className="h-5 w-5" />
           {itemCount > 0 && (
-            <Badge className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center p-0 bg-red-600 border-2 border-white text-white">
+            <Badge className="absolute -top-2 -right-2 h-5 w-5 flex items-center justify-center p-0 bg-blue-600 border-2 border-[#0B1120] text-white font-bold">
               {itemCount}
             </Badge>
           )}
