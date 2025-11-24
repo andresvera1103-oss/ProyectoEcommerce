@@ -120,3 +120,32 @@
     @apply bg-background text-foreground;
   }
 }
+
+/* 👇 El scrollbar va en su propia capa, fuera de 'base' */
+@layer utilities {
+  .scrollbar-premium {
+    scrollbar-width: thin;
+    scrollbar-color: #1e293b #020617;
+  }
+
+  .scrollbar-premium::-webkit-scrollbar {
+    height: 6px;
+    width: 6px;
+  }
+
+  .scrollbar-premium::-webkit-scrollbar-track {
+    background: #020617;
+    border-radius: 10px;
+  }
+
+  .scrollbar-premium::-webkit-scrollbar-thumb {
+    background: #334155;
+    border-radius: 10px;
+    transition: background 0.3s ease;
+  }
+
+  .scrollbar-premium::-webkit-scrollbar-thumb:hover {
+    background: #3b82f6;
+    cursor: pointer;
+  }
+}
