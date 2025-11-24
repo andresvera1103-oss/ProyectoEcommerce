@@ -1,4 +1,3 @@
-// Usamos DummyJSON que es más rápido y confiable
 const API_URL = 'https://dummyjson.com';
 
 export interface Product {
@@ -12,6 +11,12 @@ export interface Product {
     rate: number;
     count: number;
   };
+}
+
+export interface Category {
+  slug: string;
+  name: string;
+  url: string;
 }
 
 // Función interna segura
@@ -32,25 +37,36 @@ async function fetchFromAPI(endpoint: string) {
   }
 }
 
-// --- Funciones de Productos (Adaptadas para DummyJSON) ---
+// --- Funciones de Productos ---
 
-export async function getAllProducts(): Promise<Product[]> {
-  const data = await fetchFromAPI('/products?limit=20'); // Traemos 20 productos
+// Modificamos esta función para aceptar una categoría opcional
+export async function getAllProducts(category?: string): Promise<Product[]> {
+  // Si hay categoría, usamos el endpoint de filtrado, si no, traemos todos
+  const endpoint = category && category !== 'all' 
+    ? `/products/category/${category}` 
+    : '/products?limit=0'; // Limit 0 trae todos en DummyJSON (o pon un numero alto)
+
+  const data = await fetchFromAPI(endpoint);
   
-  // DummyJSON devuelve un objeto { products: [...] }
   if (data && data.products) {
-    // Adaptamos los datos para que encajen con tu diseño actual
     return data.products.map((p: any) => ({
       id: p.id,
       title: p.title,
       price: p.price,
       description: p.description,
       category: p.category,
-      image: p.thumbnail, // Usamos el thumbnail como imagen principal
+      image: p.thumbnail,
       rating: { rate: p.rating || 4.5, count: 100 }
     }));
   }
   return [];
+}
+
+// Nueva función para obtener la lista de categorías
+export async function getCategories(): Promise<Category[]> {
+  const data = await fetchFromAPI('/products/categories');
+  // DummyJSON devuelve un array de objetos { slug, name, url }
+  return data || []; 
 }
 
 export async function getProductById(id: string): Promise<Product> {
@@ -68,26 +84,18 @@ export async function getProductById(id: string): Promise<Product> {
     };
   }
 
-  // Adaptamos el producto individual
   return {
     id: p.id,
     title: p.title,
     price: p.price,
     description: p.description,
     category: p.category,
-    image: p.thumbnail || p.images[0], // Usamos thumbnail o la primera imagen
+    image: p.thumbnail || p.images[0],
     rating: { rate: p.rating || 4.5, count: 100 }
   };
 }
 
-export async function getProductsByCategory(category: string): Promise<Product[]> {
-  // DummyJSON usa rutas distintas para categorías, pero para este demo
-  // simplemente devolvemos todos para evitar errores.
-  return getAllProducts();
-}
-
-// --- Auth (Sigue igual) ---
-
+// --- Auth ---
 export async function loginUser(username: string, password: string) {
   try {
     const res = await fetch('https://dummyjson.com/auth/login', {
