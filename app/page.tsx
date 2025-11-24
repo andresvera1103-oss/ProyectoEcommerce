@@ -4,31 +4,31 @@ import { getAllProducts, getCategories } from "@/lib/api";
 import { Card, CardContent, CardFooter } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import AddToCartButton from "@/components/AddToCartButton";
-import CategoryFilter from "@/components/CategoryFilter"; // Importamos el nuevo componente
+import CategoryFilter from "@/components/CategoryFilter";
 import { Truck, ShieldCheck, RefreshCw, ArrowRight, Filter } from "lucide-react";
 
 export const dynamic = 'force-dynamic';
 
-// Definimos que la página recibe searchParams
+// 👇 CAMBIO 1: Definimos searchParams como Promise
 export default async function Home({
   searchParams,
 }: {
-  searchParams: { category?: string };
+  searchParams: Promise<{ category?: string }>;
 }) {
-  // 1. Leemos la categoría de la URL (o undefined si no hay)
-  // Nota: En Next.js 15 searchParams es una promesa, pero en 14 es objeto directo.
-  // Si te da error de promesa, añade 'await' antes de searchParams (depende tu versión exacta).
-  // Asumiendo Next.js 14 estable:
-  const category = searchParams.category;
+  // 👇 CAMBIO 2: "Esperamos" a que los parámetros se resuelvan
+  const resolvedSearchParams = await searchParams;
+  const category = resolvedSearchParams.category;
 
-  // 2. Ejecutamos las peticiones en paralelo para mayor velocidad
+  // Obtenemos productos y categorías
   const [products, categories] = await Promise.all([
     getAllProducts(category),
     getCategories()
   ]);
 
-  // Título dinámico según categoría
-  const pageTitle = category ? `Categoría: ${category.replace('-', ' ')}` : "Nuestra Colección";
+  // Formateamos el título para que se vea bonito (ej: "beauty" -> "Beauty")
+  const pageTitle = category 
+    ? `Categoría: ${category.charAt(0).toUpperCase() + category.slice(1).replace('-', ' ')}` 
+    : "Nuestra Colección";
 
   return (
     <div className="min-h-screen bg-[#0B1120] text-slate-200">
@@ -55,9 +55,9 @@ export default async function Home({
           <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div className="flex items-center gap-3">
               <Filter className="h-6 w-6 text-blue-500" />
-              <h2 className="text-2xl font-bold text-white capitalize tracking-tight">{pageTitle}</h2>
+              <h2 className="text-2xl font-bold text-white tracking-tight">{pageTitle}</h2>
               <span className="text-sm text-slate-500 bg-slate-900 px-2 py-1 rounded-md border border-slate-800">
-                {products.length} productos
+                {products.length} resultados
               </span>
             </div>
           </div>
@@ -113,9 +113,11 @@ export default async function Home({
             ))}
           </div>
         ) : (
-          <div className="text-center py-20">
+          <div className="text-center py-20 bg-slate-900/30 rounded-xl border border-slate-800 border-dashed">
             <p className="text-xl text-slate-500">No se encontraron productos en esta categoría.</p>
-            <Link href="/" className="text-blue-500 hover:underline mt-4 block">Ver todos los productos</Link>
+            <Link href="/" className="text-blue-500 hover:text-blue-400 font-medium hover:underline mt-4 block transition-colors">
+              Ver todos los productos
+            </Link>
           </div>
         )}
       </main>
