@@ -16,11 +16,10 @@ export default function ProductFilters() {
   const searchParams = useSearchParams();
   const { replace } = useRouter();
   
-  // Estado local para el valor del input, inicializado con lo que haya en la URL
+  // Estado local para el valor del input
   const [searchTerm, setSearchTerm] = useState(searchParams.get('q')?.toString() || "");
 
   // Efecto "Debounce": Espera 300ms después de que dejes de escribir antes de buscar
-  // Esto evita recargas constantes mientras escribes
   useEffect(() => {
     const handler = setTimeout(() => {
       const params = new URLSearchParams(searchParams);
@@ -31,13 +30,12 @@ export default function ProductFilters() {
         params.delete('q');
       }
       
-      // Si buscamos texto, quitamos la categoría para evitar conflictos de filtrado
+      // Si buscamos texto, quitamos la categoría para evitar conflictos
       if (searchTerm) params.delete('category');
       
       replace(`/?${params.toString()}`);
     }, 300); // 300ms de espera
 
-    // Limpieza del timeout si el usuario sigue escribiendo
     return () => {
       clearTimeout(handler);
     };
