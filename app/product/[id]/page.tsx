@@ -1,16 +1,18 @@
 import Image from "next/image";
 import Link from "next/link";
-import { getProductById } from "@/lib/api";
+import { getProductById, getRelatedProducts } from "@/lib/api"; // Importar getRelatedProducts
 import AddToCartButton from "@/components/AddToCartButton";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
-import { Star, ArrowLeft, Check, Truck, Shield } from "lucide-react";
+import { Star, ArrowLeft, Truck, Shield, Check } from "lucide-react";
+import { Card, CardContent } from "@/components/ui/card"; // Necesario para los relacionados
 
 export const dynamic = 'force-dynamic';
 
 export async function generateMetadata({ params }: { params: { id: string } }) {
   const resolvedParams = await params;
   const product = await getProductById(resolvedParams.id);
+  if (!product) return { title: 'Producto no encontrado' };
   return {
     title: `${product.title} | ShopModerno`,
     description: product.description,
@@ -20,6 +22,11 @@ export async function generateMetadata({ params }: { params: { id: string } }) {
 export default async function ProductPage({ params }: { params: { id: string } }) {
   const resolvedParams = await params;
   const product = await getProductById(resolvedParams.id);
+
+  if (!product) return <div className="text-white text-center py-20">Producto no encontrado</div>;
+
+  // Obtenemos productos relacionados
+  const relatedProducts = await getRelatedProducts(product.category, product.id);
 
   return (
     <div className="min-h-screen bg-[#0B1120] text-slate-200 py-10">
@@ -32,60 +39,58 @@ export default async function ProductPage({ params }: { params: { id: string } }
           Volver al catálogo
         </Link>
 
-        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20">
-          
-          {/* COLUMNA IZQUIERDA: Imagen Heroica */}
-          <div className="relative h-[500px] w-full bg-white rounded-3xl overflow-hidden flex items-center justify-center shadow-2xl shadow-blue-900/10 group">
-            <div className="absolute inset-0 bg-gradient-to-b from-transparent to-black/5 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+        {/* DETALLE PRINCIPAL */}
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 mb-20">
+          {/* Imagen */}
+          <div className="relative h-[400px] md:h-[500px] w-full bg-white rounded-3xl overflow-hidden flex items-center justify-center shadow-2xl shadow-blue-900/10">
             <Image
-              src={product.image}
+              src={product.thumbnail} // DummyJSON usa thumbnail
               alt={product.title}
               fill
-              className="object-contain p-12 hover:scale-110 transition-transform duration-500 ease-out"
+              className="object-contain p-8 hover:scale-105 transition-transform duration-500"
               priority 
             />
           </div>
 
-          {/* COLUMNA DERECHA: Detalles */}
+          {/* Info */}
           <div className="flex flex-col justify-center space-y-8">
             <div>
               <div className="flex items-center gap-3 mb-4">
-                <Badge className="bg-blue-600 hover:bg-blue-700 text-white border-0 px-3 py-1">{product.category}</Badge>
+                <Badge className="bg-blue-600 text-white hover:bg-blue-700 px-3 py-1 capitalize">{product.category}</Badge>
                 <div className="flex items-center gap-1 text-yellow-400 text-sm font-medium bg-yellow-400/10 px-2 py-1 rounded-full">
                   <Star className="fill-current h-3 w-3" />
-                  <span>{product.rating.rate}</span>
-                  <span className="text-slate-500 ml-1">({product.rating.count} reviews)</span>
+                  <span>{product.rating}</span>
                 </div>
               </div>
 
-              <h1 className="text-4xl md:text-5xl font-bold text-white mb-4 leading-tight">
-                {product.title}
-              </h1>
+              <h1 className="text-3xl md:text-5xl font-bold text-white mb-4 leading-tight">{product.title}</h1>
               
-              <div className="flex items-baseline gap-4">
+              <div className="flex items-center gap-4">
                  <span className="text-4xl font-bold text-white">${product.price}</span>
-                 <span className="text-lg text-slate-500 line-through">${(product.price * 1.2).toFixed(2)}</span>
+                 {product.discountPercentage > 0 && (
+                   <Badge variant="destructive" className="text-sm">-{Math.round(product.discountPercentage)}% OFF</Badge>
+                 )}
               </div>
             </div>
 
-            <div className="prose prose-invert text-slate-400 leading-relaxed border-l-2 border-slate-800 pl-4">
-              <p>{product.description}</p>
-            </div>
+            <p className="text-slate-400 leading-relaxed text-lg border-l-2 border-slate-700 pl-4">
+              {product.description}
+            </p>
 
-            {/* Características Extra */}
+            {/* Badges de servicio */}
             <div className="grid grid-cols-2 gap-4">
                <div className="bg-slate-900/50 p-4 rounded-xl border border-slate-800 flex items-center gap-3">
-                  <Truck className="h-8 w-8 text-blue-500" />
-                  <div className="text-sm">
-                    <p className="font-bold text-white">Envío Gratis</p>
-                    <p className="text-slate-500">En 24-48 horas</p>
+                  <Truck className="h-6 w-6 text-blue-500" />
+                  <div>
+                    <p className="font-bold text-white text-sm">Envío Gratis</p>
+                    <p className="text-xs text-slate-500">Global</p>
                   </div>
                </div>
                <div className="bg-slate-900/50 p-4 rounded-xl border border-slate-800 flex items-center gap-3">
-                  <Shield className="h-8 w-8 text-emerald-500" />
-                  <div className="text-sm">
-                    <p className="font-bold text-white">Garantía</p>
-                    <p className="text-slate-500">2 años incluidos</p>
+                  <Shield className="h-6 w-6 text-emerald-500" />
+                  <div>
+                    <p className="font-bold text-white text-sm">Garantía</p>
+                    <p className="text-xs text-slate-500">Original</p>
                   </div>
                </div>
             </div>
@@ -98,11 +103,34 @@ export default async function ProductPage({ params }: { params: { id: string } }
                 <AddToCartButton product={product} />
               </div>
               <div className="flex items-center gap-2 text-xs text-emerald-400 mt-2">
-                 <Check className="h-3 w-3" /> Stock disponible para envío inmediato
+                 <Check className="h-3 w-3" /> Stock disponible ({product.stock} unidades)
               </div>
             </div>
           </div>
         </div>
+
+        {/* SECCIÓN RELACIONADOS */}
+        {relatedProducts.length > 0 && (
+          <div className="mt-20 border-t border-slate-800 pt-10">
+            <h2 className="text-2xl font-bold text-white mb-8">También te podría interesar</h2>
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-6">
+              {relatedProducts.map((rel) => (
+                <Link key={rel.id} href={`/product/${rel.id}`} className="group block">
+                  <Card className="bg-slate-900/40 border border-slate-800 hover:border-blue-500/40 transition-all overflow-hidden">
+                    <div className="h-40 bg-white p-4 relative flex items-center justify-center">
+                      <Image src={rel.thumbnail} alt={rel.title} fill className="object-contain p-2 group-hover:scale-110 transition-transform" />
+                    </div>
+                    <CardContent className="p-4">
+                      <h3 className="text-white font-medium truncate group-hover:text-blue-400 transition-colors">{rel.title}</h3>
+                      <p className="text-slate-400 font-bold mt-1">${rel.price}</p>
+                    </CardContent>
+                  </Card>
+                </Link>
+              ))}
+            </div>
+          </div>
+        )}
+
       </div>
     </div>
   );
