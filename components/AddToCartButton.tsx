@@ -1,113 +1,70 @@
-'use client';
+"use client";
 
-import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { useCartStore } from "@/lib/store";
-import { Product } from "@/lib/api";
-import { useState, useEffect } from "react";
-import { Minus, Plus, ShoppingCart } from "lucide-react";
+import Image from "next/image";
+import { ShoppingCart, Plus, Minus } from "lucide-react";
 
-interface AddToCartButtonProps {
-  product: Product;
+interface Product {
+  id: number;
+  title: string;
+  price: number;
+  category: string;
+  image: string;
 }
 
-export default function AddToCartButton({ product }: AddToCartButtonProps) {
-  const addItem = useCartStore((state) => state.addItem);
-  const [isAdded, setIsAdded] = useState(false);
-  
-  // Usamos string para permitir que el input quede vacío ("") mientras escribes
-  const [inputValue, setInputValue] = useState("1");
-
-  const handleAdd = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    
-    // Convertimos el texto a número, si está vacío o es 0, mandamos 1
-    const quantity = parseInt(inputValue) || 1;
-    
-    addItem(product, quantity);
-    setIsAdded(true);
-    setInputValue("1"); // Reseteamos
-    setTimeout(() => setIsAdded(false), 2000);
-  };
-
-  const increment = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    const current = parseInt(inputValue) || 0;
-    setInputValue((current + 1).toString());
-  };
-
-  const decrement = (e: React.MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    const current = parseInt(inputValue) || 1;
-    const newValue = Math.max(1, current - 1);
-    setInputValue(newValue.toString());
-  };
-
-  // Manejar la escritura manual
-  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // Solo permitimos números
-    const value = e.target.value.replace(/[^0-9]/g, '');
-    setInputValue(value);
-  };
-
-  // Cuando te sales del input (blur), si está vacío, ponle un 1
-  const handleBlur = () => {
-    if (inputValue === "" || parseInt(inputValue) === 0) {
-      setInputValue("1");
-    }
-  };
-
+export default function ProductCard({ product }: { product: Product }) {
   return (
-    <div className="flex items-center gap-2 w-full bg-gray-50 p-1 rounded-lg border border-gray-200">
+    <div className="group relative flex flex-col justify-between overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm transition-all hover:shadow-md dark:border-gray-800 dark:bg-gray-900">
       
-      <div className="flex items-center h-9 bg-white rounded-md border border-gray-200 shadow-sm shrink-0 w-28">
-        <button 
-          onClick={decrement}
-          className="px-2 h-full hover:bg-gray-100 text-gray-600 transition-colors rounded-l-md flex items-center justify-center border-r"
-          type="button"
-        >
-          <Minus className="h-3 w-3" />
-        </button>
-        
-        {/* INPUT EDITABLE MEJORADO */}
-        <Input
-          type="text" // Usamos text para tener control total
-          value={inputValue}
-          onChange={handleInputChange}
-          onBlur={handleBlur}
-          className="h-full border-0 text-center focus-visible:ring-0 px-0 shadow-none font-semibold text-gray-900"
-          onClick={(e) => e.preventDefault()} // Evita click en el Link padre
-        />
-
-        <button 
-          onClick={increment}
-          className="px-2 h-full hover:bg-gray-100 text-gray-600 transition-colors rounded-r-md flex items-center justify-center border-l"
-          type="button"
-        >
-          <Plus className="h-3 w-3" />
-        </button>
+      {/* Badge de Categoría */}
+      <div className="absolute left-3 top-3 z-10">
+        <span className="rounded-full bg-black/5 px-3 py-1 text-xs font-medium text-gray-800 backdrop-blur-md dark:bg-white/10 dark:text-gray-200">
+          {product.category}
+        </span>
       </div>
 
-      <Button 
-        onClick={handleAdd} 
-        className={`flex-1 h-9 rounded-md shadow-sm transition-all duration-200 text-sm font-medium ${
-          isAdded 
-            ? "bg-green-600 hover:bg-green-700 text-white" 
-            : "bg-blue-600 hover:bg-blue-700 text-white"
-        }`}
-      >
-        {isAdded ? (
-          "¡Listo!"
-        ) : (
-          <div className="flex items-center justify-center gap-1.5">
-            <ShoppingCart className="h-3.5 w-3.5" />
-            <span>Añadir</span>
+      {/* Imagen del Producto */}
+      <div className="relative aspect-square w-full overflow-hidden bg-gray-50 p-4 dark:bg-gray-800/50">
+        <Image
+          src={product.image}
+          alt={product.title}
+          fill
+          className="object-contain transition-transform duration-300 group-hover:scale-105"
+        />
+      </div>
+
+      {/* Información del Producto */}
+      <div className="flex flex-1 flex-col p-4">
+        <h3 className="line-clamp-2 text-lg font-semibold text-gray-900 dark:text-white">
+          {product.title}
+        </h3>
+        
+        <div className="mt-2 text-xl font-bold text-blue-600 dark:text-blue-400">
+          ${product.price.toFixed(2)}
+        </div>
+
+        <div className="mt-auto pt-4">
+          <div className="flex items-center gap-3">
+            {/* Selector de Cantidad CORREGIDO */}
+            <div className="flex items-center rounded-lg border border-gray-300 bg-transparent dark:border-gray-600">
+              <button className="px-3 py-2 text-gray-600 transition-colors hover:bg-gray-100 hover:text-black dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-white">
+                <Minus size={16} />
+              </button>
+              <span className="w-8 text-center text-sm font-medium text-gray-900 dark:text-white">
+                1
+              </span>
+              <button className="px-3 py-2 text-gray-600 transition-colors hover:bg-gray-100 hover:text-black dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-white">
+                <Plus size={16} />
+              </button>
+            </div>
+
+            {/* Botón Añadir */}
+            <button className="flex flex-1 items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700 active:scale-95">
+              <ShoppingCart size={18} />
+              <span className="hidden sm:inline">Añadir</span>
+            </button>
           </div>
-        )}
-      </Button>
+        </div>
+      </div>
     </div>
   );
 }

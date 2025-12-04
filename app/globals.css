@@ -45,10 +45,16 @@
 
 :root {
   --radius: 0.625rem;
-  --background: oklch(1 0 0);
+  
+  /* MODO CLARO MEJORADO */
+  /* Fondo gris muy suave (Zinc-50) para dar profundidad */
+  --background: oklch(0.985 0.001 247.858);
   --foreground: oklch(0.129 0.042 264.695);
+  
+  /* Tarjetas blancas puras para que resalten sobre el fondo gris */
   --card: oklch(1 0 0);
   --card-foreground: oklch(0.129 0.042 264.695);
+  
   --popover: oklch(1 0 0);
   --popover-foreground: oklch(0.129 0.042 264.695);
   --primary: oklch(0.208 0.042 265.755);
@@ -94,8 +100,13 @@
   --accent: oklch(0.279 0.041 260.031);
   --accent-foreground: oklch(0.984 0.003 247.858);
   --destructive: oklch(0.704 0.191 22.216);
-  --border: oklch(1 0 0 / 10%);
-  --input: oklch(1 0 0 / 15%);
+  
+  /* MODO OSCURO MEJORADO */
+  /* Bordes más sutiles para que no se vea rayado */
+  --border: oklch(0.279 0.041 260.031);
+  /* Inputs sólidos oscuros en lugar de blancos translúcidos */
+  --input: oklch(0.279 0.041 260.031);
+  
   --ring: oklch(0.551 0.027 264.364);
   --chart-1: oklch(0.488 0.243 264.376);
   --chart-2: oklch(0.696 0.17 162.48);
@@ -108,7 +119,7 @@
   --sidebar-primary-foreground: oklch(0.984 0.003 247.858);
   --sidebar-accent: oklch(0.279 0.041 260.031);
   --sidebar-accent-foreground: oklch(0.984 0.003 247.858);
-  --sidebar-border: oklch(1 0 0 / 10%);
+  --sidebar-border: oklch(0.279 0.041 260.031);
   --sidebar-ring: oklch(0.551 0.027 264.364);
 }
 
@@ -121,7 +132,7 @@
   }
 }
 
-/* 👇 El scrollbar va en su propia capa, fuera de 'base' */
+/* Scrollbar Premium */
 @layer utilities {
   .scrollbar-premium {
     scrollbar-width: thin;
