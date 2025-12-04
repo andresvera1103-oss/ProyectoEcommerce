@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import Navbar from "@/components/Navbar";
-import Providers from "./providers/providers"; // 1. Importamos el proveedor
+import Providers from "./providers"; // Importación correcta: está en la misma carpeta
+import Navbar from "@/components/Navbar"; // Asegúrate de que tu Navbar esté aquí
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "E-Commerce Moderno",
-  description: "Creado con Next.js y Zustand",
+  title: "Ecommerce Moderno",
+  description: "La mejor tienda online",
 };
 
 export default function RootLayout({
@@ -19,10 +19,13 @@ export default function RootLayout({
   return (
     <html lang="es">
       <body className={inter.className}>
-        {/* 2. Envolvemos todo (Navbar y children) con Providers */}
         <Providers>
-          <Navbar />
-          {children}
+          {/* El Navbar va aquí para que salga en toda la tienda */}
+          <Navbar /> 
+          
+          <main className="container mx-auto max-w-7xl pt-16 px-6 flex-grow">
+            {children}
+          </main>
         </Providers>
       </body>
     </html>

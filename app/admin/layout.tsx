@@ -1,32 +1,20 @@
-import type { Metadata } from "next";
-import { Inter } from "next/font/google";
-import "./globals.css";
-import Navbar from "@/components/Navbar";
-import Providers from "../providers"; 
-
-const inter = Inter({ subsets: ["latin"] });
-
-export const metadata: Metadata = {
-  title: "ShopModerno",
-  description: "Tu tienda de confianza",
-};
-
-export default function RootLayout({
+export default function AdminLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
-    <html lang="es" suppressHydrationWarning>
-      <body className={inter.className}>
-        {/* Envolvemos toda la app con nuestros proveedores */}
-        <Providers>
-          <Navbar />
-          <main>
-            {children}
-          </main>
-        </Providers>
-      </body>
-    </html>
+    <div className="flex flex-col gap-4 w-full">
+      {/* Barra superior exclusiva del Admin */}
+      <div className="bg-gray-100 p-4 rounded-lg shadow-sm border border-gray-200">
+        <h2 className="font-bold text-xl text-gray-800">🛠️ Panel de Administración</h2>
+        <p className="text-sm text-gray-500">Gestiona tus productos y ventas aquí</p>
+      </div>
+
+      {/* Contenido de la página de admin */}
+      <section className="mt-4">
+        {children}
+      </section>
+    </div>
   );
 }
