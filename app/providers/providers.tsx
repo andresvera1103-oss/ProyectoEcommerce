@@ -5,7 +5,6 @@ import { ThemeProvider } from 'next-themes';
 import { useEffect, useState } from 'react';
 
 export default function Providers({ children }: { children: React.ReactNode }) {
-  // Evitamos errores de hidratación montando solo en cliente
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
@@ -18,7 +17,6 @@ export default function Providers({ children }: { children: React.ReactNode }) {
 
   return (
     <SessionProvider>
-      {/* attribute="class" es clave para que Tailwind funcione con .dark */}
       <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
         {children}
       </ThemeProvider>
