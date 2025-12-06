@@ -2,9 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
-
-// 👇 CORRECCIÓN: Usamos '@' para ir a la ruta segura
-import Providers from "@/app/providers"; 
+import Providers from "./providers"; // Importamos desde el archivo hermano app/providers.tsx
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -23,7 +21,8 @@ export default function RootLayout({
       <body className={inter.className}>
         <Providers>
           <Navbar />
-          {/* Quitamos el <main> de aquí para evitar el error de hidratación */}
+          {/* 👇 CORRECCIÓN: Quitamos la etiqueta <main> de aquí.
+              Dejamos que cada página maneje su propia estructura. */}
           {children}
         </Providers>
       </body>

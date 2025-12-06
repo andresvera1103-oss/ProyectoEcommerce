@@ -13,7 +13,7 @@ export default function Providers({ children }: { children: React.ReactNode }) {
 
   return (
     <SessionProvider>
-      {/* Esperamos a que monte para evitar errores de hidratación con el tema */}
+      {/* El ThemeProvider solo se renderiza cuando el cliente está montado para evitar errores */}
       {mounted ? (
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
           {children}
