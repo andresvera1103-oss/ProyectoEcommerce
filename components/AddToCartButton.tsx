@@ -14,21 +14,25 @@ interface AddToCartButtonProps {
 export default function AddToCartButton({ product }: AddToCartButtonProps) {
   const addItem = useCartStore((state) => state.addItem);
   const [isAdded, setIsAdded] = useState(false);
+  
+  // Usamos string para permitir que el input quede vacío ("") mientras escribes
   const [inputValue, setInputValue] = useState("1");
 
-  // 👇 ESTA FUNCIÓN ES LA CLAVE
-  // Evita que el clic "atraviese" el botón y active el enlace de la tarjeta
-  const stopProp = (e: React.MouseEvent | React.ChangeEvent) => {
+  // Función auxiliar para detener la propagación del clic
+  const stopProp = (e: React.MouseEvent | React.ChangeEvent | React.FocusEvent) => {
     e.preventDefault();
     e.stopPropagation();
   };
 
   const handleAdd = (e: React.MouseEvent) => {
     stopProp(e);
+    
+    // Convertimos el texto a número, si está vacío o es 0, mandamos 1
     const quantity = parseInt(inputValue) || 1;
+    
     addItem(product, quantity);
     setIsAdded(true);
-    setInputValue("1");
+    setInputValue("1"); // Reseteamos
     setTimeout(() => setIsAdded(false), 2000);
   };
 
@@ -45,44 +49,53 @@ export default function AddToCartButton({ product }: AddToCartButtonProps) {
     setInputValue(newValue.toString());
   };
 
+  // Manejar la escritura manual
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    stopProp(e); 
+    stopProp(e);
+    // Solo permitimos números
     let value = e.target.value.replace(/[^0-9]/g, '');
+    
+    // Validación máxima 99
     if (value.length > 2) value = value.slice(0, 2);
+    
     setInputValue(value);
   };
 
-  const handleBlur = () => {
+  // Cuando te sales del input (blur), si está vacío, ponle un 1
+  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
     if (inputValue === "" || parseInt(inputValue) === 0) {
       setInputValue("1");
     }
   };
 
   return (
-    // Agregamos stopProp al contenedor padre también por seguridad
-    <div className="flex items-center gap-2 w-full p-1 rounded-xl bg-slate-100 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/50 transition-colors" onClick={stopProp}>
+    <div 
+      className="flex items-center gap-2 w-full p-1 rounded-xl bg-slate-100 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/50 transition-colors"
+      onClick={(e) => stopProp(e as any)}
+    >
       
       <div className="flex items-center bg-white dark:bg-slate-900 rounded-lg shadow-sm border border-slate-200 dark:border-slate-800 h-9">
         <button 
           onClick={decrement}
-          className="w-8 h-full flex items-center justify-center text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors"
+          className="w-8 h-full flex items-center justify-center text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors border-r dark:border-slate-800"
           type="button"
         >
           <Minus className="h-3 w-3" />
         </button>
         
+        {/* INPUT EDITABLE MEJORADO */}
         <Input
-          type="text"
+          type="text" // Usamos text para tener control total
           value={inputValue}
           onChange={handleInputChange}
           onBlur={handleBlur}
-          onClick={(e) => e.preventDefault()} 
-          className="w-8 h-full border-0 bg-transparent text-center focus-visible:ring-0 px-0 font-bold text-slate-900 dark:text-slate-200 text-sm"
+          onClick={(e) => stopProp(e as any)}
+          className="w-10 h-full border-0 bg-transparent text-center focus-visible:ring-0 px-0 font-bold text-slate-900 dark:text-slate-200 text-sm"
         />
 
         <button 
           onClick={increment}
-          className="w-8 h-full flex items-center justify-center text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors"
+          className="w-8 h-full flex items-center justify-center text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors border-l dark:border-slate-800"
           type="button"
         >
           <Plus className="h-3 w-3" />
