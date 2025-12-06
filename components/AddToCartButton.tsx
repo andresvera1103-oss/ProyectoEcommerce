@@ -16,15 +16,14 @@ export default function AddToCartButton({ product }: AddToCartButtonProps) {
   const [isAdded, setIsAdded] = useState(false);
   const [inputValue, setInputValue] = useState("1");
 
-  // Función auxiliar para detener la propagación del clic
-  // Esto evita que al hacer clic aquí, se abra la página del producto
-  const stopProp = (e: React.MouseEvent | React.ChangeEvent) => {
+  // Detiene la propagación para que el Link padre no se active
+  const stopProp = (e: React.MouseEvent | React.ChangeEvent | React.FormEvent) => {
     e.preventDefault();
     e.stopPropagation();
   };
 
   const handleAdd = (e: React.MouseEvent) => {
-    stopProp(e); 
+    stopProp(e);
     const quantity = parseInt(inputValue) || 1;
     addItem(product, quantity);
     setIsAdded(true);
@@ -46,29 +45,22 @@ export default function AddToCartButton({ product }: AddToCartButtonProps) {
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    stopProp(e); 
+    stopProp(e); // ¡CRUCIAL! Permite escribir sin navegar
     let value = e.target.value.replace(/[^0-9]/g, '');
     if (value.length > 2) value = value.slice(0, 2);
     setInputValue(value);
   };
 
-  const handleBlur = (e: React.FocusEvent<HTMLInputElement>) => {
-    if (inputValue === "" || parseInt(inputValue) === 0) {
-      setInputValue("1");
-    }
-  };
-
   return (
     <div 
-      className="flex items-center gap-2 w-full p-1 rounded-xl bg-slate-100 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/50 transition-colors"
-      onClick={stopProp} // Blindaje extra al contenedor
+      className="flex items-center gap-2 w-full p-1 rounded-xl bg-slate-100 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/50"
+      onClick={(e) => stopProp(e)} // Asegura que el contenedor no dispare el link
     >
       
-      {/* Selector de Cantidad */}
       <div className="flex items-center bg-white dark:bg-slate-900 rounded-lg shadow-sm border border-slate-200 dark:border-slate-800 h-9">
         <button 
           onClick={decrement}
-          className="w-8 h-full flex items-center justify-center text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors"
+          className="w-8 h-full flex items-center justify-center text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors border-r dark:border-slate-800"
           type="button"
         >
           <Minus className="h-3 w-3" />
@@ -78,21 +70,19 @@ export default function AddToCartButton({ product }: AddToCartButtonProps) {
           type="text"
           value={inputValue}
           onChange={handleInputChange}
-          onBlur={handleBlur}
-          onClick={stopProp} // Necesario para poder hacer clic en el input
-          className="w-8 h-full border-0 bg-transparent text-center focus-visible:ring-0 px-0 font-bold text-slate-900 dark:text-slate-200 text-sm"
+          onClick={(e) => stopProp(e)} // Permite hacer foco sin navegar
+          className="w-10 h-full border-0 bg-transparent text-center focus-visible:ring-0 px-0 font-bold text-slate-900 dark:text-slate-200 text-sm"
         />
 
         <button 
           onClick={increment}
-          className="w-8 h-full flex items-center justify-center text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors"
+          className="w-8 h-full flex items-center justify-center text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors border-l dark:border-slate-800"
           type="button"
         >
           <Plus className="h-3 w-3" />
         </button>
       </div>
 
-      {/* Botón Principal */}
       <Button 
         onClick={handleAdd} 
         className={`flex-1 h-9 rounded-lg font-semibold text-sm shadow-sm transition-all duration-300 ${
