@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
-import Providers from "./providers"; // Importa desde el archivo ./app/providers.tsx
+import Providers from "./providers"; 
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -17,14 +17,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    // suppressHydrationWarning ayuda a evitar errores con el tema oscuro
     <html lang="es" suppressHydrationWarning>
       <body className={inter.className}>
         <Providers>
           <Navbar />
-          <main>
-            {children}
-          </main>
+          {/* 👇 CORRECCIÓN: Quitamos la etiqueta <main> de aquí.
+              Dejamos que cada página (children) maneje su propia estructura.
+          */}
+          {children}
         </Providers>
       </body>
     </html>
