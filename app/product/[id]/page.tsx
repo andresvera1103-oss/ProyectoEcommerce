@@ -36,7 +36,6 @@ export default async function ProductPage({ params }: { params: { id: string } }
         </Link>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 lg:gap-20 mb-20">
-          {/* Imagen */}
           <div className="relative h-[400px] md:h-[500px] w-full bg-white p-8 rounded-3xl overflow-hidden flex items-center justify-center shadow-xl border border-slate-200 dark:border-slate-800">
             <Image
               src={product.image}
@@ -47,15 +46,16 @@ export default async function ProductPage({ params }: { params: { id: string } }
             />
           </div>
 
-          {/* Info */}
           <div className="flex flex-col justify-center space-y-8">
             <div>
               <div className="flex items-center gap-3 mb-4">
                 <Badge className="bg-blue-600 text-white hover:bg-blue-700 px-3 py-1 capitalize">{product.category}</Badge>
                 <div className="flex items-center gap-1 text-yellow-500 dark:text-yellow-400 text-sm font-medium bg-yellow-50 dark:bg-yellow-400/10 px-2 py-1 rounded-full border border-yellow-100 dark:border-transparent">
                   <Star className="fill-current h-3 w-3" />
-                  {/* 👇 CORRECCIÓN: Usamos .rate para obtener el número */}
+                  
+                  {/* 👇 AQUÍ ESTABA EL ERROR: Agregamos .rate */}
                   <span>{product.rating.rate}</span>
+                  
                   <span className="text-slate-500 ml-1">({product.rating.count} reviews)</span>
                 </div>
               </div>
