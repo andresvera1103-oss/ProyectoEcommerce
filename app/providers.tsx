@@ -12,14 +12,13 @@ export default function Providers({ children }: { children: React.ReactNode }) {
   }, []);
 
   return (
-    // 👇 SOLUCIÓN: SessionProvider va PRIMERO y siempre envuelve todo
     <SessionProvider>
+      {/* El ThemeProvider solo se renderiza cuando el cliente está montado para evitar errores */}
       {mounted ? (
         <ThemeProvider attribute="class" defaultTheme="dark" enableSystem={false}>
           {children}
         </ThemeProvider>
       ) : (
-        // Si el tema no ha cargado, mostramos el contenido "crudo" pero CON sesión
         <>{children}</>
       )}
     </SessionProvider>
