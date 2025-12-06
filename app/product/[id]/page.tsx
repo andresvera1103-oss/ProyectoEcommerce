@@ -54,7 +54,7 @@ export default async function ProductPage({ params }: { params: { id: string } }
                 <Badge className="bg-blue-600 text-white hover:bg-blue-700 px-3 py-1 capitalize">{product.category}</Badge>
                 <div className="flex items-center gap-1 text-yellow-400 text-sm font-medium bg-yellow-400/10 px-2 py-1 rounded-full">
                   <Star className="fill-current h-3 w-3" />
-                  {/* 👇 ESTA ES LA CORRECCIÓN: .rate */}
+                  {/* 👇 CORRECCIÓN IMPORTANTE: Agregamos .rate */}
                   <span>{product.rating.rate}</span>
                   <span className="text-slate-500 ml-1">({product.rating.count} reviews)</span>
                 </div>
@@ -96,6 +96,7 @@ export default async function ProductPage({ params }: { params: { id: string } }
             <div className="space-y-4">
               <p className="text-sm font-medium text-white">Cantidad:</p>
               <div className="w-full max-w-md">
+                {/* Botón de añadir corregido */}
                 <AddToCartButton product={product} />
               </div>
               <div className="flex items-center gap-2 text-xs text-emerald-400 mt-2">

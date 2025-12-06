@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
-import Providers from "./providers"; // Asegúrate de que apunte a tu archivo app/providers.tsx
+import Providers from "./providers"; 
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -21,7 +21,8 @@ export default function RootLayout({
       <body className={inter.className}>
         <Providers>
           <Navbar />
-          {/* 👇 CORRECCIÓN: Quitamos la etiqueta <main> de aquí. Solo renderizamos children */}
+          {/* 👇 CORRECCIÓN: Quitamos la etiqueta <main>. 
+              Solo renderizamos {children} directamente. */}
           {children}
         </Providers>
       </body>
