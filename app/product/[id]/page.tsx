@@ -54,7 +54,7 @@ export default async function ProductPage({ params }: { params: { id: string } }
                 <Badge className="bg-blue-600 text-white hover:bg-blue-700 px-3 py-1 capitalize">{product.category}</Badge>
                 <div className="flex items-center gap-1 text-yellow-400 text-sm font-medium bg-yellow-400/10 px-2 py-1 rounded-full">
                   <Star className="fill-current h-3 w-3" />
-                  {/* 👇 CORRECCIÓN AQUÍ: Usamos .rate */}
+                  {/* 👇 CORRECCIÓN: .rate para mostrar el número */}
                   <span>{product.rating.rate}</span>
                   <span className="text-slate-500 ml-1">({product.rating.count} reviews)</span>
                 </div>

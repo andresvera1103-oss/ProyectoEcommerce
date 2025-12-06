@@ -1,14 +1,14 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
-import Providers from "./providers"; // Importación correcta: está en la misma carpeta
-import Navbar from "@/components/Navbar"; // Asegúrate de que tu Navbar esté aquí
+import Navbar from "@/components/Navbar";
+import Providers from "./providers"; // Importa desde el archivo ./app/providers.tsx
 
 const inter = Inter({ subsets: ["latin"] });
 
 export const metadata: Metadata = {
-  title: "Ecommerce Moderno",
-  description: "La mejor tienda online",
+  title: "ShopModerno",
+  description: "Tu tienda de confianza",
 };
 
 export default function RootLayout({
@@ -17,13 +17,12 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="es">
+    // suppressHydrationWarning ayuda a evitar errores con el tema oscuro
+    <html lang="es" suppressHydrationWarning>
       <body className={inter.className}>
         <Providers>
-          {/* El Navbar va aquí para que salga en toda la tienda */}
-          <Navbar /> 
-          
-          <main className="container mx-auto max-w-7xl pt-16 px-6 flex-grow">
+          <Navbar />
+          <main>
             {children}
           </main>
         </Providers>
