@@ -47,16 +47,15 @@ function CartItemRow({ item, removeItem, updateQuantity }: any) {
 
   return (
     <div>
-      <div className="flex gap-4 py-3"> {/* Aumenté un poco el py */}
+      <div className="flex gap-4 py-4 px-2"> {/* Agregado px-2 para separar de los bordes laterales */}
         
-        {/* 👇 CORRECCIÓN VISUAL AQUÍ */}
-        {/* Imagen con padding interno para que no toque los bordes */}
-        <div className="relative h-24 w-24 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden flex-shrink-0">
+        {/* Imagen: Añadido ml-2 para moverla más a la derecha */}
+        <div className="relative h-24 w-24 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden flex-shrink-0 ml-2">
           <Image 
             src={item.image} 
             alt={item.title} 
             fill 
-            className="object-contain p-2" // p-2 asegura que la imagen no toque el borde del recuadro
+            className="object-contain p-2"
           />
         </div>
 
@@ -75,32 +74,35 @@ function CartItemRow({ item, removeItem, updateQuantity }: any) {
             </Button>
           </div>
 
-          <div className="flex items-end justify-between mt-2">
-            {/* Control Editable */}
-            <div className="flex items-center border border-slate-200 dark:border-slate-700 rounded-md bg-slate-50 dark:bg-slate-900 h-8 shadow-sm">
-              <Button 
-                variant="ghost" size="icon" className="h-full w-8 rounded-none rounded-l-md hover:bg-white dark:hover:bg-slate-800"
-                onClick={() => updateQuantity(item.id, Math.max(1, item.quantity - 1))}
-              >
-                <Minus className="h-3 w-3 text-slate-600 dark:text-slate-400" />
-              </Button>
-              
-              <Input 
-                type="text"
-                className="h-full w-10 text-center border-0 bg-transparent p-0 focus-visible:ring-0 shadow-none text-sm font-bold text-slate-900 dark:text-white"
-                value={inputValue}
-                onChange={handleInputChange}
-                onBlur={handleBlur}
-              />
+          <div className="flex items-center justify-between mt-3">
+            {/* Control Editable: Centrado con mx-auto en un contenedor flexible */}
+            <div className="flex-1 flex justify-center">
+              <div className="flex items-center border border-slate-200 dark:border-slate-700 rounded-md bg-slate-50 dark:bg-slate-900 h-8 shadow-sm">
+                <Button 
+                  variant="ghost" size="icon" className="h-full w-8 rounded-none rounded-l-md hover:bg-white dark:hover:bg-slate-800"
+                  onClick={() => updateQuantity(item.id, Math.max(1, item.quantity - 1))}
+                >
+                  <Minus className="h-3 w-3 text-slate-600 dark:text-slate-400" />
+                </Button>
+                
+                <Input 
+                  type="text"
+                  className="h-full w-10 text-center border-0 bg-transparent p-0 focus-visible:ring-0 shadow-none text-sm font-bold text-slate-900 dark:text-white"
+                  value={inputValue}
+                  onChange={handleInputChange}
+                  onBlur={handleBlur}
+                />
 
-              <Button 
-                variant="ghost" size="icon" className="h-full w-8 rounded-none rounded-r-md hover:bg-white dark:hover:bg-slate-800"
-                onClick={() => updateQuantity(item.id, Math.min(99, item.quantity + 1))}
-              >
-                <Plus className="h-3 w-3 text-slate-600 dark:text-slate-400" />
-              </Button>
+                <Button 
+                  variant="ghost" size="icon" className="h-full w-8 rounded-none rounded-r-md hover:bg-white dark:hover:bg-slate-800"
+                  onClick={() => updateQuantity(item.id, Math.min(99, item.quantity + 1))}
+                >
+                  <Plus className="h-3 w-3 text-slate-600 dark:text-slate-400" />
+                </Button>
+              </div>
             </div>
 
+            {/* PRECIO */}
             <div className="text-right pl-2">
                <p className="font-bold text-base text-slate-900 dark:text-white">
                 ${(item.price * item.quantity).toFixed(2)}
