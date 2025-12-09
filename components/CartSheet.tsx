@@ -21,24 +21,17 @@ import { useState, useEffect } from "react";
 
 // --- SUB-COMPONENTE PARA CADA PRODUCTO ---
 function CartItemRow({ item, removeItem, updateQuantity }: any) {
-  // Estado local para permitir edición libre (incluso borrar todo)
   const [inputValue, setInputValue] = useState(item.quantity.toString());
 
-  // Sincronizar si la cantidad cambia externamente (ej. botones + -)
   useEffect(() => {
     setInputValue(item.quantity.toString());
   }, [item.quantity]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    // Permitir solo números
     let value = e.target.value.replace(/[^0-9]/g, '');
-    
-    // Opcional: Limitar a 99
     if (value.length > 2) value = value.slice(0, 2);
-
     setInputValue(value);
     
-    // Solo actualizamos el store si hay un número válido mayor a 0
     const numValue = parseInt(value);
     if (!isNaN(numValue) && numValue >= 1) {
       updateQuantity(item.id, numValue);
@@ -46,18 +39,25 @@ function CartItemRow({ item, removeItem, updateQuantity }: any) {
   };
 
   const handleBlur = () => {
-    // Si el usuario deja el campo vacío al salir, restauramos a 1 (o la cantidad anterior)
-    if (inputValue === "" || parseInt(inputValue) === 0) {
+    if (inputValue === "" || parseInt(inputValue) < 1) {
       setInputValue(item.quantity.toString());
-      updateQuantity(item.id, item.quantity); 
+      updateQuantity(item.id, item.quantity);
     }
   };
 
   return (
     <div>
-      <div className="flex gap-4 py-2">
-        <div className="relative h-20 w-20 bg-slate-100 dark:bg-slate-800 rounded-lg border border-slate-200 dark:border-slate-700 overflow-hidden flex-shrink-0 shadow-sm">
-          <Image src={item.image} alt={item.title} fill className="object-contain p-2" />
+      <div className="flex gap-4 py-3"> {/* Aumenté un poco el py */}
+        
+        {/* 👇 CORRECCIÓN VISUAL AQUÍ */}
+        {/* Imagen con padding interno para que no toque los bordes */}
+        <div className="relative h-24 w-24 bg-white dark:bg-slate-800 rounded-xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden flex-shrink-0">
+          <Image 
+            src={item.image} 
+            alt={item.title} 
+            fill 
+            className="object-contain p-2" // p-2 asegura que la imagen no toque el borde del recuadro
+          />
         </div>
 
         <div className="flex-1 flex flex-col justify-between min-w-0">
@@ -101,7 +101,6 @@ function CartItemRow({ item, removeItem, updateQuantity }: any) {
               </Button>
             </div>
 
-            {/* PRECIO LIMPIO (Sin texto duplicado) */}
             <div className="text-right pl-2">
                <p className="font-bold text-base text-slate-900 dark:text-white">
                 ${(item.price * item.quantity).toFixed(2)}
@@ -110,7 +109,7 @@ function CartItemRow({ item, removeItem, updateQuantity }: any) {
           </div>
         </div>
       </div>
-      <Separator className="my-4 bg-slate-100 dark:bg-slate-800" />
+      <Separator className="my-2 bg-slate-100 dark:bg-slate-800" />
     </div>
   );
 }
