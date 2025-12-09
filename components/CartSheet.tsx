@@ -6,30 +6,39 @@ import Image from "next/image";
 import { useCartStore } from "@/lib/store";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger, SheetFooter, SheetClose } from "@/components/ui/sheet";
+import {
+  Sheet,
+  SheetContent,
+  SheetHeader,
+  SheetTitle,
+  SheetTrigger,
+  SheetFooter,
+  SheetClose,
+} from "@/components/ui/sheet";
 import { Separator } from "@/components/ui/separator";
 import { Badge } from "@/components/ui/badge";
 import { useState, useEffect } from "react";
 
 // --- SUB-COMPONENTE PARA CADA PRODUCTO ---
-// Esto nos permite manejar el estado del input (borrar, escribir) sin que el store nos interrumpa
 function CartItemRow({ item, removeItem, updateQuantity }: any) {
+  // Estado local para permitir edición libre (incluso borrar todo)
   const [inputValue, setInputValue] = useState(item.quantity.toString());
 
-  // Si la cantidad cambia desde fuera (ej. otro botón), actualizamos el input
+  // Sincronizar si la cantidad cambia externamente (ej. botones + -)
   useEffect(() => {
     setInputValue(item.quantity.toString());
   }, [item.quantity]);
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    let value = e.target.value.replace(/[^0-9]/g, ''); // Solo números
+    // Permitir solo números
+    let value = e.target.value.replace(/[^0-9]/g, '');
     
-    // Validación máxima 99
+    // Opcional: Limitar a 99
     if (value.length > 2) value = value.slice(0, 2);
 
     setInputValue(value);
     
-    // Actualizamos el store en tiempo real SOLO si hay un número válido
+    // Solo actualizamos el store si hay un número válido mayor a 0
     const numValue = parseInt(value);
     if (!isNaN(numValue) && numValue >= 1) {
       updateQuantity(item.id, numValue);
@@ -37,10 +46,10 @@ function CartItemRow({ item, removeItem, updateQuantity }: any) {
   };
 
   const handleBlur = () => {
-    // Si el usuario deja vacío el campo, volvemos a poner la cantidad real
-    if (inputValue === "" || parseInt(inputValue) < 1) {
+    // Si el usuario deja el campo vacío al salir, restauramos a 1 (o la cantidad anterior)
+    if (inputValue === "" || parseInt(inputValue) === 0) {
       setInputValue(item.quantity.toString());
-      updateQuantity(item.id, item.quantity); // Restaurar valor seguro
+      updateQuantity(item.id, item.quantity); 
     }
   };
 
@@ -71,7 +80,7 @@ function CartItemRow({ item, removeItem, updateQuantity }: any) {
             <div className="flex items-center border border-slate-200 dark:border-slate-700 rounded-md bg-slate-50 dark:bg-slate-900 h-8 shadow-sm">
               <Button 
                 variant="ghost" size="icon" className="h-full w-8 rounded-none rounded-l-md hover:bg-white dark:hover:bg-slate-800"
-                onClick={() => updateQuantity(item.id, Math.min(99, item.quantity - 1))}
+                onClick={() => updateQuantity(item.id, Math.max(1, item.quantity - 1))}
               >
                 <Minus className="h-3 w-3 text-slate-600 dark:text-slate-400" />
               </Button>
@@ -92,7 +101,7 @@ function CartItemRow({ item, removeItem, updateQuantity }: any) {
               </Button>
             </div>
 
-            {/* PRECIO (Corregido: Solo mostramos el total, quitamos el "Precio unit") */}
+            {/* PRECIO LIMPIO (Sin texto duplicado) */}
             <div className="text-right pl-2">
                <p className="font-bold text-base text-slate-900 dark:text-white">
                 ${(item.price * item.quantity).toFixed(2)}
@@ -146,7 +155,6 @@ export default function CartSheet() {
           ) : (
             <div className="space-y-1">
               {items.map((item) => (
-                // Usamos el sub-componente aquí
                 <CartItemRow 
                   key={item.id} 
                   item={item} 
