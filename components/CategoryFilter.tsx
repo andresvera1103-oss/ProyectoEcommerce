@@ -15,35 +15,34 @@ export default function CategoryFilter({ categories }: CategoryFilterProps) {
 
   return (
     <div className="w-full">
-      {/* 👇 AQUI ESTÁ EL CAMBIO: Añadimos 'scrollbar-premium' en lugar de 'no-scrollbar' */}
-      <div className="flex overflow-x-auto pb-4 pt-2 gap-3 scrollbar-premium">
+      <div className="flex overflow-x-auto pb-4 pt-2 gap-3 scrollbar-premium px-1">
         
         {/* Botón "Todas" */}
-        <Link href="/" className="shrink-0"> {/* shrink-0 evita que se aplasten */}
+        <Link href="/" className="shrink-0">
           <Button
             variant={currentCategory === 'all' ? "default" : "outline"}
-            className={`rounded-full px-6 font-medium transition-all duration-300 h-10 ${
+            className={`rounded-full px-6 h-10 font-bold tracking-wide transition-all duration-200 shadow-sm ${
               currentCategory === 'all'
-                ? "bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-900/50 border-transparent"
-                : "bg-slate-900/50 border-slate-700 text-slate-400 hover:text-white hover:bg-slate-800 hover:border-slate-600 backdrop-blur-sm"
+                ? "bg-blue-600 hover:bg-blue-700 text-white border-2 border-blue-700"
+                : "bg-white dark:bg-slate-900 border-2 border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:border-slate-400 hover:bg-slate-50"
             }`}
           >
             Todas
           </Button>
         </Link>
 
-        {/* Botones de Categorías Dinámicas */}
+        {/* Botones de Categorías */}
         {categories.map((cat) => (
           <Link key={cat.slug} href={`/?category=${cat.slug}`} className="shrink-0">
             <Button
               variant={currentCategory === cat.slug ? "default" : "outline"}
-              className={`rounded-full px-6 font-medium transition-all duration-300 capitalize h-10 ${
+              className={`rounded-full px-6 h-10 font-bold tracking-wide transition-all duration-200 capitalize shadow-sm ${
                 currentCategory === cat.slug
-                  ? "bg-blue-600 hover:bg-blue-500 text-white shadow-lg shadow-blue-900/50 border-transparent"
-                  : "bg-slate-900/50 border-slate-700 text-slate-400 hover:text-white hover:bg-slate-800 hover:border-slate-600 backdrop-blur-sm"
+                  ? "bg-blue-600 hover:bg-blue-700 text-white border-2 border-blue-700"
+                  : "bg-white dark:bg-slate-900 border-2 border-slate-300 dark:border-slate-700 text-slate-700 dark:text-slate-200 hover:border-slate-400 hover:bg-slate-50"
               }`}
             >
-              {cat.name}
+              {cat.name.replace('-', ' ')}
             </Button>
           </Link>
         ))}
