@@ -33,13 +33,12 @@ export default async function Home({
   else if (sort === 'rating-desc') products.sort((a, b) => b.rating.rate - a.rating.rate);
 
   const pageTitle = query 
-    ? `Búsqueda: "${query}"` 
+    ? `Resultados para: "${query}"` 
     : category 
       ? `Categoría: ${category.charAt(0).toUpperCase() + category.slice(1).replace('-', ' ')}` 
-      : "Catálogo Completo";
+      : "Nuestra Colección";
 
   return (
-    // FONDO BASE: Gris suave en claro (para contraste) | Oscuro profundo en dark
     <div className="min-h-screen bg-slate-100 dark:bg-[#020617] text-slate-900 dark:text-slate-200 transition-colors duration-300">
       
       {/* HERO SECTION */}
@@ -84,7 +83,7 @@ export default async function Home({
           </div>
         </div>
 
-        {/* GRID DE PRODUCTOS PROFESIONAL */}
+        {/* GRID DE PRODUCTOS */}
         {products.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 md:gap-8">
             {products.map((product) => (
@@ -94,7 +93,7 @@ export default async function Home({
               >
                 <Link href={`/product/${product.id}`} className="flex-1 flex flex-col relative">
                   
-                  {/* IMAGEN DEL PRODUCTO (Aquí está la mejora de color) */}
+                  {/* IMAGEN */}
                   <div className="relative h-64 w-full p-6 flex items-center justify-center overflow-hidden border-b border-slate-100 dark:border-slate-800 bg-white dark:bg-slate-800/50 transition-colors">
                     <Image
                       src={product.thumbnail || product.image}
@@ -104,14 +103,12 @@ export default async function Home({
                       className="object-contain h-full w-auto group-hover:scale-110 transition-transform duration-500 ease-out z-10 mix-blend-multiply dark:mix-blend-normal"
                     />
                     
-                    {/* Badge Categoría */}
                     <div className="absolute top-3 left-3">
                         <Badge variant="secondary" className="bg-slate-100/90 dark:bg-black/40 backdrop-blur-sm border border-slate-200 dark:border-white/10 text-slate-700 dark:text-slate-200 hover:bg-slate-200">
                         {product.category}
                         </Badge>
                     </div>
 
-                    {/* Badge Descuento */}
                     {product.discountPercentage > 0 && (
                       <div className="absolute top-3 right-3 flex items-center gap-1 bg-red-50 dark:bg-red-500/10 border border-red-100 dark:border-red-500/20 px-2 py-1 rounded-md">
                         <Tag className="h-3 w-3 text-red-600 dark:text-red-400" />
@@ -122,7 +119,7 @@ export default async function Home({
                     )}
                   </div>
 
-                  {/* CONTENIDO DE LA TARJETA */}
+                  {/* CONTENIDO */}
                   <CardContent className="flex-1 p-5 flex flex-col">
                     <div className="mb-2">
                       <h3 className="font-bold text-slate-900 dark:text-slate-100 text-base leading-snug line-clamp-2 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 transition-colors">
@@ -157,9 +154,9 @@ export default async function Home({
                   </CardContent>
                 </Link>
 
-                {/* FOOTER SEPARADO PARA EL BOTÓN */}
+                {/* FOOTER CON BOTÓN DE ACCIÓN */}
                 <CardFooter className="p-5 pt-0 mt-auto">
-                  <div className="w-full">
+                  <div className="w-full pt-2">
                     <AddToCartButton product={product} />
                   </div>
                 </CardFooter>
@@ -168,7 +165,7 @@ export default async function Home({
           </div>
         ) : (
           <div className="flex flex-col items-center justify-center py-32 bg-white dark:bg-slate-900/30 rounded-3xl border border-dashed border-slate-300 dark:border-slate-800 shadow-sm">
-            <div className="p-4 bg-slate-50 dark:bg-slate-800 rounded-full mb-4">
+            <div className="p-4 bg-slate-100 dark:bg-slate-800 rounded-full mb-4">
               <Filter className="h-8 w-8 text-slate-400" />
             </div>
             <h3 className="text-lg font-bold text-slate-900 dark:text-white">No encontramos productos</h3>

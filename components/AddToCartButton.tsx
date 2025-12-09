@@ -58,13 +58,15 @@ export default function AddToCartButton({ product }: AddToCartButtonProps) {
 
   return (
     <div 
-      className="flex items-center gap-2 w-full p-1 rounded-xl bg-slate-100 dark:bg-slate-800/50 border border-slate-200 dark:border-slate-700/50 transition-colors"
+      className="flex items-center gap-2 w-full p-1 rounded-xl bg-slate-100 dark:bg-slate-800 border border-slate-200 dark:border-slate-700"
       onClick={(e) => stopProp(e as any)}
     >
-      <div className="flex items-center bg-white dark:bg-slate-900 rounded-lg shadow-sm border border-slate-200 dark:border-slate-800 h-9">
+      
+      {/* Selector de Cantidad */}
+      <div className="flex items-center bg-white dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-700 h-9 overflow-hidden">
         <button 
           onClick={decrement}
-          className="w-8 h-full flex items-center justify-center text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors border-r dark:border-slate-800"
+          className="w-8 h-full flex items-center justify-center text-slate-500 hover:text-slate-900 hover:bg-slate-50 dark:text-slate-400 dark:hover:text-white dark:hover:bg-slate-800 transition-colors border-r border-slate-100 dark:border-slate-800"
           type="button"
         >
           <Minus className="h-3 w-3" />
@@ -76,24 +78,25 @@ export default function AddToCartButton({ product }: AddToCartButtonProps) {
           onChange={handleInputChange}
           onBlur={handleBlur}
           onClick={(e) => stopProp(e as any)}
-          className="w-10 h-full border-0 bg-transparent text-center focus-visible:ring-0 px-0 font-bold text-slate-900 dark:text-slate-200 text-sm"
+          className="w-10 h-full border-0 bg-transparent text-center focus-visible:ring-0 px-0 font-bold text-slate-900 dark:text-white text-sm"
         />
 
         <button 
           onClick={increment}
-          className="w-8 h-full flex items-center justify-center text-slate-500 hover:text-slate-900 dark:text-slate-400 dark:hover:text-white transition-colors border-l dark:border-slate-800"
+          className="w-8 h-full flex items-center justify-center text-slate-500 hover:text-slate-900 hover:bg-slate-50 dark:text-slate-400 dark:hover:text-white dark:hover:bg-slate-800 transition-colors border-l border-slate-100 dark:border-slate-800"
           type="button"
         >
           <Plus className="h-3 w-3" />
         </button>
       </div>
 
+      {/* Botón Principal (Con colores sólidos para legibilidad) */}
       <Button 
         onClick={handleAdd} 
         className={`flex-1 h-9 rounded-lg font-semibold text-sm shadow-sm transition-all duration-300 ${
           isAdded 
-            ? "bg-emerald-500 hover:bg-emerald-600 text-white" 
-            : "bg-slate-900 hover:bg-slate-800 text-white dark:bg-blue-600 dark:hover:bg-blue-500"
+            ? "bg-emerald-600 hover:bg-emerald-700 text-white dark:bg-emerald-500 dark:hover:bg-emerald-600" 
+            : "bg-indigo-600 hover:bg-indigo-700 text-white dark:bg-indigo-500 dark:hover:bg-indigo-600"
         }`}
       >
         {isAdded ? (
