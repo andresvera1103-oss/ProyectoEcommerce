@@ -62,11 +62,11 @@ export default function AddToCartButton({ product }: AddToCartButtonProps) {
       onClick={(e) => stopProp(e as any)}
     >
       
-      {/* Selector de Cantidad - Alto Contraste */}
-      <div className="flex items-center bg-white dark:bg-slate-950 rounded-lg border-2 border-slate-200 dark:border-slate-700 h-10 overflow-hidden shadow-sm">
+      {/* Selector de Cantidad */}
+      <div className="flex items-center bg-white dark:bg-slate-900 rounded-lg border-2 border-slate-200 dark:border-slate-800 h-10 overflow-hidden shadow-sm">
         <button 
           onClick={decrement}
-          className="w-8 h-full flex items-center justify-center text-slate-800 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors font-bold"
+          className="w-8 h-full flex items-center justify-center text-slate-800 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors font-bold hover:text-blue-600 dark:hover:text-blue-400"
           type="button"
           aria-label="Restar"
         >
@@ -84,7 +84,7 @@ export default function AddToCartButton({ product }: AddToCartButtonProps) {
 
         <button 
           onClick={increment}
-          className="w-8 h-full flex items-center justify-center text-slate-800 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors font-bold"
+          className="w-8 h-full flex items-center justify-center text-slate-800 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors font-bold hover:text-blue-600 dark:hover:text-blue-400"
           type="button"
           aria-label="Sumar"
         >
@@ -92,13 +92,13 @@ export default function AddToCartButton({ product }: AddToCartButtonProps) {
         </button>
       </div>
 
-      {/* Botón Principal - Colores Sólidos y Texto Grande */}
+      {/* Botón Principal */}
       <Button 
         onClick={handleAdd} 
         className={`flex-1 h-10 rounded-lg font-bold text-sm tracking-wide shadow-md hover:shadow-lg transition-all active:scale-95 ${
           isAdded 
             ? "bg-emerald-600 hover:bg-emerald-700 text-white border-2 border-emerald-700" 
-            : "bg-blue-600 hover:bg-blue-700 text-white border-2 border-blue-700 dark:bg-white dark:text-slate-900 dark:hover:bg-slate-200 dark:border-white"
+            : "bg-blue-600 hover:bg-blue-700 text-white border-2 border-blue-700 dark:bg-indigo-600 dark:hover:bg-indigo-500 dark:text-white dark:border-indigo-500" // 👈 CAMBIO AQUÍ: Ahora es Indigo en modo oscuro
         }`}
       >
         {isAdded ? (
