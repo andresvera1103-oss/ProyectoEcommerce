@@ -57,20 +57,23 @@ export default function AddToCartButton({ product }: AddToCartButtonProps) {
   };
 
   return (
+    // CONTENEDOR PRINCIPAL:
+    // Light: Fondo blanco, borde gris suave.
+    // Dark: Fondo slate-800, borde slate-700.
     <div 
-      className="flex items-center gap-3 w-full"
+      className="flex items-center gap-3 w-full p-1.5 rounded-xl bg-white border border-slate-200 shadow-sm dark:bg-slate-800/50 dark:border-slate-700/50 transition-colors"
       onClick={(e) => stopProp(e as any)}
     >
       
-      {/* Selector de Cantidad */}
-      <div className="flex items-center bg-white dark:bg-slate-900 rounded-lg border-2 border-slate-200 dark:border-slate-800 h-10 overflow-hidden shadow-sm">
+      {/* SELECTOR DE CANTIDAD */}
+      <div className="flex items-center bg-slate-50 dark:bg-slate-900 rounded-lg border border-slate-200 dark:border-slate-800 h-10 overflow-hidden">
         <button 
           onClick={decrement}
-          className="w-8 h-full flex items-center justify-center text-slate-800 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors font-bold hover:text-blue-600 dark:hover:text-blue-400"
+          className="w-9 h-full flex items-center justify-center text-slate-500 hover:text-slate-900 hover:bg-white dark:text-slate-400 dark:hover:text-white dark:hover:bg-slate-800 transition-colors border-r border-slate-200 dark:border-slate-800"
           type="button"
           aria-label="Restar"
         >
-          <Minus className="h-4 w-4" strokeWidth={3} />
+          <Minus className="h-4 w-4" />
         </button>
         
         <Input
@@ -79,26 +82,27 @@ export default function AddToCartButton({ product }: AddToCartButtonProps) {
           onChange={handleInputChange}
           onBlur={handleBlur}
           onClick={(e) => stopProp(e as any)}
-          className="w-10 h-full border-0 bg-transparent text-center focus-visible:ring-0 px-0 font-extrabold text-slate-900 dark:text-white text-base"
+          className="w-12 h-full border-0 bg-transparent text-center focus-visible:ring-0 px-0 font-bold text-slate-900 dark:text-white text-base"
         />
 
         <button 
           onClick={increment}
-          className="w-8 h-full flex items-center justify-center text-slate-800 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors font-bold hover:text-blue-600 dark:hover:text-blue-400"
+          className="w-9 h-full flex items-center justify-center text-slate-500 hover:text-slate-900 hover:bg-white dark:text-slate-400 dark:hover:text-white dark:hover:bg-slate-800 transition-colors border-l border-slate-200 dark:border-slate-800"
           type="button"
           aria-label="Sumar"
         >
-          <Plus className="h-4 w-4" strokeWidth={3} />
+          <Plus className="h-4 w-4" />
         </button>
       </div>
 
-      {/* Botón Principal */}
+      {/* BOTÓN DE ACCIÓN */}
+      {/* Light: Azul vibrante. Dark: Indigo profundo. */}
       <Button 
         onClick={handleAdd} 
-        className={`flex-1 h-10 rounded-lg font-bold text-sm tracking-wide shadow-md hover:shadow-lg transition-all active:scale-95 ${
+        className={`flex-1 h-10 rounded-lg font-bold text-sm tracking-wide shadow-sm hover:shadow-md transition-all active:scale-95 ${
           isAdded 
-            ? "bg-emerald-600 hover:bg-emerald-700 text-white border-2 border-emerald-700" 
-            : "bg-blue-600 hover:bg-blue-700 text-white border-2 border-blue-700 dark:bg-indigo-600 dark:hover:bg-indigo-500 dark:text-white dark:border-indigo-500" // 👈 CAMBIO AQUÍ: Ahora es Indigo en modo oscuro
+            ? "bg-emerald-500 hover:bg-emerald-600 text-white border border-emerald-600" 
+            : "bg-blue-600 hover:bg-blue-700 text-white dark:bg-indigo-600 dark:hover:bg-indigo-500"
         }`}
       >
         {isAdded ? (
@@ -108,7 +112,7 @@ export default function AddToCartButton({ product }: AddToCartButtonProps) {
           </div>
         ) : (
           <div className="flex items-center justify-center gap-2">
-            <ShoppingBag className="h-5 w-5" strokeWidth={2.5} />
+            <ShoppingBag className="h-4 w-4" strokeWidth={2.5} />
             <span>AÑADIR</span>
           </div>
         )}
