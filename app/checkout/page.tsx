@@ -178,11 +178,10 @@ export default function CheckoutPage() {
                 </CardHeader>
                 <CardContent className="pt-6 space-y-6">
                   
-                  {/* 👇 AJUSTE: Lista con más espacio */}
-                  <div className="max-h-[300px] overflow-y-auto space-y-5 pr-2 pl-2 custom-scrollbar">
+                  {/* 👇 AJUSTE CLAVE: 'pl-6' añade mucho más espacio a la izquierda */}
+                  <div className="max-h-[300px] overflow-y-auto space-y-5 pr-4 pl-6 custom-scrollbar">
                     {items.map((item) => (
                       <div key={item.id} className="flex gap-4 items-center group">
-                        {/* 👇 AJUSTE: Imagen más grande (h-20 w-20) y con más padding interno (p-2) */}
                         <div className="relative h-20 w-20 bg-white rounded-xl overflow-hidden flex-shrink-0 border border-slate-700 shadow-sm">
                           <Image 
                             src={item.image} 
@@ -212,7 +211,7 @@ export default function CheckoutPage() {
                     <Separator className="bg-slate-800 my-2" />
                     <div className="flex justify-between items-center">
                       <span className="text-lg font-bold text-white">Total a Pagar</span>
-                      <span className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400">${total.toFixed(2)}</span>
+                      <span className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400">${total.toFixed(2)}</span>
                     </div>
                   </div>
 
