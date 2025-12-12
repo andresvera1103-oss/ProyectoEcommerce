@@ -178,16 +178,18 @@ export default function CheckoutPage() {
                 </CardHeader>
                 <CardContent className="pt-6 space-y-6">
                   
-                  {/* 👇 AJUSTE CLAVE: 'pl-6' añade mucho más espacio a la izquierda */}
+                  {/* 👇 MEJORA VISUAL: Más espacio izquierda (pl-6) y entre items (space-y-5) */}
                   <div className="max-h-[300px] overflow-y-auto space-y-5 pr-4 pl-6 custom-scrollbar">
                     {items.map((item) => (
                       <div key={item.id} className="flex gap-4 items-center group">
-                        <div className="relative h-20 w-20 bg-white rounded-xl overflow-hidden flex-shrink-0 border border-slate-700 shadow-sm">
+                        
+                        {/* 👇 MEJORA: Recuadro más grande (h-24 w-24) y más padding interno (p-4) */}
+                        <div className="relative h-24 w-24 bg-white rounded-xl overflow-hidden flex-shrink-0 border border-slate-700 shadow-sm">
                           <Image 
                             src={item.image} 
                             alt={item.title} 
                             fill 
-                            className="object-contain p-2 group-hover:scale-110 transition-transform" 
+                            className="object-contain p-4 group-hover:scale-110 transition-transform" 
                           />
                         </div>
                         
@@ -211,7 +213,7 @@ export default function CheckoutPage() {
                     <Separator className="bg-slate-800 my-2" />
                     <div className="flex justify-between items-center">
                       <span className="text-lg font-bold text-white">Total a Pagar</span>
-                      <span className="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400">${total.toFixed(2)}</span>
+                      <span className="text-3xl font-black text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-emerald-400">${total.toFixed(2)}</span>
                     </div>
                   </div>
 
